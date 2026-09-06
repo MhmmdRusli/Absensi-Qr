@@ -11,8 +11,7 @@ export default function AdminLayout() {
     };
 
     const linkClass = ({ isActive }) =>
-        `block px-4 py-2 rounded-lg text-sm font-medium ${
-            isActive ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
+        `block px-4 py-2 rounded-lg text-sm font-medium ${isActive ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
         }`;
 
     return (
@@ -20,8 +19,15 @@ export default function AdminLayout() {
             <aside className="w-64 bg-white border-r border-gray-200 p-4">
                 <h2 className="text-lg font-bold text-gray-900 mb-6">Panel Admin</h2>
                 <nav className="space-y-1">
-                    <NavLink to="/admin/dashboard" className={linkClass}>Dashboard</NavLink>
-                    <NavLink to="/admin/students" className={linkClass}>Data Siswa</NavLink>
+                    <nav className="space-y-1">
+                        <nav className="space-y-1">
+                            <NavLink to="/admin/dashboard" className={linkClass}>Dashboard</NavLink>
+                            <NavLink to="/admin/students" className={linkClass}>Data Siswa</NavLink>
+                            <NavLink to="/admin/teachers" className={linkClass}>Data Guru</NavLink>
+                            <NavLink to="/admin/subjects" className={linkClass}>Data Mata Pelajaran</NavLink>
+                            <NavLink to="/admin/classes" className={linkClass}>Data Kelas</NavLink>
+                        </nav>
+                    </nav>
                 </nav>
             </aside>
 

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ClassRoom;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -89,13 +88,6 @@ class StudentController extends Controller
 
         return response()->json([
             'message' => 'Siswa berhasil dihapus.',
-        ]);
-    }
-
-    public function classesList()
-    {
-        return response()->json([
-            'data' => ClassRoom::select('id', 'name')->orderBy('name')->get(),
         ]);
     }
 

@@ -13,6 +13,15 @@ import TeacherDashboard from './Pages/Teacher/Dashboard';
 import StudentDashboard from './Pages/Student/Dashboard';
 
 import StudentIndex from './Pages/Admin/Student/Index';
+import TeacherIndex from './Pages/Admin/Teacher/Index';
+import SessionCreate from './Pages/Teacher/Session/Create';
+import SessionShow from './Pages/Teacher/Session/Show';
+import ClassRoomIndex from './Pages/Admin/ClassRoom/Index';
+import SubjectIndex from './Pages/Admin/Subject/Index';
+
+import Scan from './Pages/Student/Scan';
+
+
 
 export default function AppRouter() {
     return (
@@ -32,6 +41,9 @@ export default function AppRouter() {
                     >
                         <Route path="dashboard" element={<AdminDashboard />} />
                         <Route path="students" element={<StudentIndex />} />
+                        <Route path="teachers" element={<TeacherIndex />} />
+                        <Route path="classes" element={<ClassRoomIndex />} />
+                        <Route path="subjects" element={<SubjectIndex />} />
                     </Route>
 
                     <Route
@@ -43,6 +55,8 @@ export default function AppRouter() {
                         }
                     >
                         <Route path="dashboard" element={<TeacherDashboard />} />
+                        <Route path="sessions/create" element={<SessionCreate />} />
+                        <Route path="sessions/:id" element={<SessionShow />} />
                     </Route>
 
                     <Route
@@ -54,6 +68,7 @@ export default function AppRouter() {
                         }
                     >
                         <Route path="dashboard" element={<StudentDashboard />} />
+                        <Route path="scan" element={<Scan />} />
                     </Route>
                 </Routes>
             </AuthProvider>

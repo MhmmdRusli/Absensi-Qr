@@ -11,8 +11,7 @@ export default function StudentLayout() {
     };
 
     const linkClass = ({ isActive }) =>
-        `block px-4 py-2 rounded-lg text-sm font-medium ${
-            isActive ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
+        `block px-4 py-2 rounded-lg text-sm font-medium ${isActive ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
         }`;
 
     return (
@@ -21,6 +20,7 @@ export default function StudentLayout() {
                 <h2 className="text-lg font-bold text-gray-900 mb-6">Panel Siswa</h2>
                 <nav className="space-y-1">
                     <NavLink to="/student/dashboard" className={linkClass}>Dashboard</NavLink>
+                    <NavLink to="/student/scan" className={linkClass}>Scan QR</NavLink>
                 </nav>
             </aside>
 

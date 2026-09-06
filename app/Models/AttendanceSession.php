@@ -20,6 +20,13 @@ class AttendanceSession extends Model
         'status',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'date' => 'date',
+        ];
+    }
+
     public function teacher()
     {
         return $this->belongsTo(Teacher::class);
