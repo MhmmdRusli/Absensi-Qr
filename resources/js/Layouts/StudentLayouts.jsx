@@ -19,7 +19,9 @@ export default function StudentLayout() {
             <aside className="w-64 bg-white border-r border-gray-200 p-4">
                 <h2 className="text-lg font-bold text-gray-900 mb-6">Panel Siswa</h2>
                 <nav className="space-y-1">
-                    <NavLink to="/student/dashboard" className={linkClass}>Dashboard</NavLink>
+                    <nav className="space-y-1">
+                        <NavLink to="/student/dashboard" className={linkClass}>Dashboard</NavLink>
+                    </nav>
                     <NavLink to="/student/scan" className={linkClass}>Scan QR</NavLink>
                 </nav>
             </aside>

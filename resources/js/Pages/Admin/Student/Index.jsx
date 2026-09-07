@@ -21,7 +21,7 @@ export default function StudentIndex() {
     };
 
     const fetchClasses = async () => {
-        const response = await api.get('/admin/classes-list');
+        const response = await api.get('/classes-list');
         setClasses(response.data.data);
     };
 
