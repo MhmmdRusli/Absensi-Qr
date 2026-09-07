@@ -20,7 +20,7 @@ import ClassRoomIndex from './Pages/Admin/ClassRoom/Index';
 import SubjectIndex from './Pages/Admin/Subject/Index';
 
 import Scan from './Pages/Student/Scan';
-
+import History from './Pages/Student/History';
 
 
 export default function AppRouter() {
@@ -69,6 +69,7 @@ export default function AppRouter() {
                     >
                         <Route path="dashboard" element={<StudentDashboard />} />
                         <Route path="scan" element={<Scan />} />
+                        <Route path="history" element={<History />} />
                     </Route>
                 </Routes>
             </AuthProvider>

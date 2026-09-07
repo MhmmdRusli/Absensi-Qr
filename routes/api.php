@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Admin\StudentController;
 use App\Http\Controllers\Api\Admin\SubjectController;
 use App\Http\Controllers\Api\Admin\TeacherController;
 use App\Http\Controllers\Api\Student\AttendanceController;
+use App\Http\Controllers\Api\Student\AttendanceHistoryController;
 use App\Http\Controllers\Api\Student\DashboardController as StudentDashboardController;
 use App\Http\Controllers\Api\Teacher\AttendanceSessionController;
 use App\Http\Controllers\Api\Teacher\DashboardController as TeacherDashboardController;
@@ -41,5 +42,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:student')->prefix('student')->group(function () {
         Route::get('/dashboard', [StudentDashboardController::class, 'index']);
         Route::post('/attendance/scan', [AttendanceController::class, 'scan']);
+        Route::get('/attendance/history', [AttendanceHistoryController::class, 'index']);
     });
 });
