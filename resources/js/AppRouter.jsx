@@ -22,6 +22,8 @@ import SubjectIndex from './Pages/Admin/Subject/Index';
 import Scan from './Pages/Student/Scan';
 import History from './Pages/Student/History';
 
+import ReportIndex from './Pages/Admin/Report/Index';
+
 
 export default function AppRouter() {
     return (
@@ -44,6 +46,7 @@ export default function AppRouter() {
                         <Route path="teachers" element={<TeacherIndex />} />
                         <Route path="classes" element={<ClassRoomIndex />} />
                         <Route path="subjects" element={<SubjectIndex />} />
+                        <Route path="reports" element={<ReportIndex />} />
                     </Route>
 
                     <Route

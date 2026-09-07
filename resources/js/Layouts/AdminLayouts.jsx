@@ -24,8 +24,9 @@ export default function AdminLayout() {
                             <NavLink to="/admin/dashboard" className={linkClass}>Dashboard</NavLink>
                             <NavLink to="/admin/students" className={linkClass}>Data Siswa</NavLink>
                             <NavLink to="/admin/teachers" className={linkClass}>Data Guru</NavLink>
-                            <NavLink to="/admin/subjects" className={linkClass}>Data Mata Pelajaran</NavLink>
                             <NavLink to="/admin/classes" className={linkClass}>Data Kelas</NavLink>
+                            <NavLink to="/admin/subjects" className={linkClass}>Mata Pelajaran</NavLink>
+                            <NavLink to="/admin/reports" className={linkClass}>Laporan</NavLink>
                         </nav>
                     </nav>
                 </nav>

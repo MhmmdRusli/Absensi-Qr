@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Admin\ClassRoomController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Api\Admin\ReportController;
 use App\Http\Controllers\Api\Admin\StudentController;
 use App\Http\Controllers\Api\Admin\SubjectController;
 use App\Http\Controllers\Api\Admin\TeacherController;
@@ -24,6 +25,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('role:admin')->prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index']);
+        Route::get('/reports', [ReportController::class, 'index']);
+        Route::get('/reports/export', [ReportController::class, 'export']);
         Route::apiResource('students', StudentController::class)->except(['show']);
         Route::apiResource('teachers', TeacherController::class)->except(['show']);
         Route::apiResource('classes', ClassRoomController::class)
