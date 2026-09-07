@@ -36,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::middleware('role:teacher')->prefix('teacher')->group(function () {
+        Route::post('/sessions/{attendanceSession}/close', [AttendanceSessionController::class, 'close']);
         Route::get('/dashboard', [TeacherDashboardController::class, 'index']);
         Route::apiResource('sessions', AttendanceSessionController::class)
             ->only(['index', 'store', 'show'])

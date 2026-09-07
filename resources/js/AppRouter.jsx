@@ -23,6 +23,7 @@ import Scan from './Pages/Student/Scan';
 import History from './Pages/Student/History';
 
 import ReportIndex from './Pages/Admin/Report/Index';
+import SessionIndex from './Pages/Teacher/Session/Index';
 
 
 export default function AppRouter() {
@@ -60,6 +61,7 @@ export default function AppRouter() {
                         <Route path="dashboard" element={<TeacherDashboard />} />
                         <Route path="sessions/create" element={<SessionCreate />} />
                         <Route path="sessions/:id" element={<SessionShow />} />
+                        <Route path="sessions" element={<SessionIndex />} />
                     </Route>
 
                     <Route

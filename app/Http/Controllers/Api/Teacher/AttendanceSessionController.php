@@ -59,7 +59,18 @@ class AttendanceSessionController extends Controller
 
         $attendanceSession->load(['classRoom', 'subject']);
 
-        return response()->json(['data' => $this->formatSession($attendanceSession)]);
+        return response()->json(['data' => $this->formatSession($attendanceSession, true)]);
+    }
+
+    public function close(Request $request, AttendanceSession $attendanceSession)
+    {
+        $this->authorizeOwnership($request, $attendanceSession);
+
+        $attendanceSession->update(['status' => 'closed']);
+
+        return response()->json([
+            'message' => 'Sesi absensi berhasil ditutup.',
+        ]);
     }
 
     private function authorizeOwnership(Request $request, AttendanceSession $attendanceSession): void
@@ -71,9 +82,9 @@ class AttendanceSessionController extends Controller
         );
     }
 
-    private function formatSession(AttendanceSession $session): array
+    private function formatSession(AttendanceSession $session, bool $withStudents = false): array
     {
-        return [
+        $data = [
             'id' => $session->id,
             'kelas' => $session->classRoom->name,
             'mata_pelajaran' => $session->subject->name,
@@ -83,5 +94,24 @@ class AttendanceSessionController extends Controller
             'qr_token' => $session->qr_token,
             'status' => $session->status,
         ];
+
+        if ($withStudents) {
+            $students = $session->classRoom->students()->with('user')->get();
+            $attendances = $session->attendances()->get()->keyBy('student_id');
+
+            $data['total_siswa'] = $students->count();
+            $data['total_hadir'] = $attendances->where('status', 'hadir')->count();
+            $data['siswa'] = $students->map(function ($student) use ($attendances) {
+                $attendance = $attendances->get($student->id);
+
+                return [
+                    'nama' => $student->user->name,
+                    'status' => $attendance?->status ?? 'belum',
+                    'waktu' => optional($attendance?->scanned_at)->format('H:i'),
+                ];
+            })->sortBy('nama')->values();
+        }
+
+        return $data;
     }
 }
