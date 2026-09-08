@@ -14,26 +14,27 @@ import StudentDashboard from './Pages/Student/Dashboard';
 
 import StudentIndex from './Pages/Admin/Student/Index';
 import TeacherIndex from './Pages/Admin/Teacher/Index';
-import SessionCreate from './Pages/Teacher/Session/Create';
-import SessionShow from './Pages/Teacher/Session/Show';
 import ClassRoomIndex from './Pages/Admin/ClassRoom/Index';
 import SubjectIndex from './Pages/Admin/Subject/Index';
+import ReportIndex from './Pages/Admin/Report/Index';
+
+import SessionCreate from './Pages/Teacher/Session/Create';
+import SessionShow from './Pages/Teacher/Session/Show';
+import SessionIndex from './Pages/Teacher/Session/Index';
 
 import Scan from './Pages/Student/Scan';
 import History from './Pages/Student/History';
-
-import ReportIndex from './Pages/Admin/Report/Index';
-import SessionIndex from './Pages/Teacher/Session/Index';
-
 
 export default function AppRouter() {
     return (
         <BrowserRouter>
             <AuthProvider>
                 <Routes>
+                    {/* LOGIN */}
                     <Route path="/" element={<Navigate to="/login" replace />} />
                     <Route path="/login" element={<Login />} />
 
+                    {/* ==================== ADMIN ==================== */}
                     <Route
                         path="/admin"
                         element={
@@ -50,6 +51,7 @@ export default function AppRouter() {
                         <Route path="reports" element={<ReportIndex />} />
                     </Route>
 
+                    {/* ==================== TEACHER ==================== */}
                     <Route
                         path="/teacher"
                         element={
@@ -64,6 +66,7 @@ export default function AppRouter() {
                         <Route path="sessions" element={<SessionIndex />} />
                     </Route>
 
+                    {/* ==================== STUDENT ==================== */}
                     <Route
                         path="/student"
                         element={
