@@ -11,6 +11,9 @@ class Subject extends Model
 
     protected $fillable = [
         'name',
+        'tingkat',
+        'guru_pengampu',
+        'status',
     ];
 
     public function attendanceSessions()

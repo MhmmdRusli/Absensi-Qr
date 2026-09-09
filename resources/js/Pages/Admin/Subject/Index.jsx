@@ -7,7 +7,7 @@ import {
     TriangleAlert, ChevronDown, X,
 } from 'lucide-react';
 
-const emptyForm = { name: '' };
+const emptyForm = { name: '', tingkat: '', guru_pengampu: '', status: 'aktif' };
 const PAGE_SIZE = 10;
 
 const NAVY = '#1E3A5F';
@@ -24,54 +24,88 @@ export default function SubjectIndex() {
 
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
+    const [tingkatFilter, setTingkatFilter] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
+    const [subjectFilter, setSubjectFilter] = useState('');
 
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [deleteError, setDeleteError] = useState('');
     const [detailTarget, setDetailTarget] = useState(null);
+    const [submitting, setSubmitting] = useState(false);
 
     const fetchSubjects = async () => {
-        const response = await api.get('/admin/subjects');
-        setSubjects(response.data.data);
-        setLoading(false);
+        try {
+            const response = await api.get('/admin/subjects');
+            setSubjects(response.data.data);
+        } catch (err) {
+            setNotice('Gagal memuat data mata pelajaran. Silakan muat ulang halaman.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
         fetchSubjects();
     }, []);
 
+    useEffect(() => {
+        if (notice) {
+            const timer = setTimeout(() => setNotice(''), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [notice]);
+
     const openCreateModal = () => {
         setEditingId(null);
         setForm(emptyForm);
         setErrors({});
+        setNotice('');
         setIsModalOpen(true);
     };
 
     const openEditModal = (subject) => {
         setEditingId(subject.id);
-        setForm({ name: subject.name });
+        setForm({
+            name: subject.name,
+            tingkat: subject.tingkat || '',
+            guru_pengampu: subject.guru_pengampu || '',
+            status: subject.status || 'aktif',
+        });
         setErrors({});
+        setNotice('');
         setIsModalOpen(true);
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setErrors({});
+        setNotice('');
+        setSubmitting(true);
 
         try {
+            let response;
             if (editingId) {
-                const response = await api.put(`/admin/subjects/${editingId}`, form);
-                setNotice(response.data.message);
+                response = await api.put(`/admin/subjects/${editingId}`, form);
             } else {
-                const response = await api.post('/admin/subjects', form);
-                setNotice(response.data.message);
+                response = await api.post('/admin/subjects', form);
             }
+            console.log('API response:', response.data);
+            setNotice(response.data.message);
 
             setIsModalOpen(false);
-            fetchSubjects();
+            await fetchSubjects();
         } catch (err) {
+            console.error('Submit error:', err.response?.data || err.message);
             if (err.response?.status === 422) {
                 setErrors(err.response.data.errors ?? { name: [err.response.data.message] });
+            } else if (err.response?.status === 401 || err.response?.status === 403) {
+                setNotice('Sesi Anda telah berakhir. Silakan login kembali.');
+            } else {
+                const message = err.response?.data?.message || err.message || 'Terjadi kesalahan. Silakan coba lagi.';
+                setNotice(message);
             }
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -97,14 +131,37 @@ export default function SubjectIndex() {
 
     const filteredSubjects = useMemo(() => {
         const q = search.trim().toLowerCase();
-        if (!q) return subjects;
-        return subjects.filter((s) => s.name.toLowerCase().includes(q));
-    }, [subjects, search]);
+        return subjects.filter((s) => {
+            const matchesSearch = !q || [
+                s.name,
+                s.tingkat,
+                s.guru_pengampu,
+            ].some((field) => field && field.toLowerCase().includes(q));
+            const matchesTingkat = !tingkatFilter || s.tingkat === tingkatFilter;
+            const matchesStatus = !statusFilter || (s.status || 'aktif') === statusFilter;
+            const matchesSubject = !subjectFilter || s.name === subjectFilter;
+            return matchesSearch && matchesTingkat && matchesStatus && matchesSubject;
+        });
+    }, [subjects, search, tingkatFilter, statusFilter, subjectFilter]);
 
     const totalPages = Math.max(1, Math.ceil(filteredSubjects.length / PAGE_SIZE));
     const pagedSubjects = filteredSubjects.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-    useEffect(() => setPage(1), [search]);
+    useEffect(() => setPage(1), [search, tingkatFilter, statusFilter, subjectFilter]);
+
+    const tingkatOptions = useMemo(() => {
+        const values = subjects.map((s) => s.tingkat).filter(Boolean);
+        return [...new Set(values)].sort();
+    }, [subjects]);
+
+    const statusOptions = useMemo(() => {
+        const values = subjects.map((s) => s.status || 'aktif');
+        return [...new Set(values)].sort();
+    }, [subjects]);
+
+    const subjectOptions = useMemo(() => {
+        return subjects.map((s) => s.name).filter(Boolean).sort();
+    }, [subjects]);
 
     return (
         <div className="max-w-7xl mx-auto flex flex-col gap-6">
@@ -171,48 +228,75 @@ export default function SubjectIndex() {
             </div>
 
             {/* TOOLBAR */}
-            <div className="bg-white p-3.5 rounded-xl border border-[#E5E7EB] flex flex-wrap items-center justify-between gap-3 shadow-sm">
-                <div className="flex flex-1 items-center gap-3 min-w-[240px]">
-                    <div className="relative flex-1 max-w-md">
-                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
-                        <input
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Cari nama mata pelajaran atau kode..."
-                            className="w-full h-9 pl-9 pr-3 text-sm bg-white border border-[#E5E7EB] rounded-lg text-[#1F2937] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-1"
-                        />
+            <div className="bg-white p-3.5 rounded-xl border border-[#E5E7EB] shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex flex-1 items-center gap-3 min-w-[240px]">
+                        <div className="relative flex-1 max-w-md">
+                            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
+                            <input
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                placeholder="Cari nama, tingkat, atau guru pengampu..."
+                                className="w-full h-9 pl-9 pr-3 text-sm bg-white border border-[#E5E7EB] rounded-lg text-[#1F2937] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-1"
+                            />
+                        </div>
+                        <div className="relative">
+                            <select
+                                value={subjectFilter}
+                                onChange={(e) => setSubjectFilter(e.target.value)}
+                                className="h-9 w-40 pl-3 pr-8 text-sm bg-white border border-[#E5E7EB] rounded-lg text-[#1F2937] appearance-none focus:outline-none focus:ring-1"
+                            >
+                                <option value="">Semua Mata Pelajaran</option>
+                                {subjectOptions.map((s) => (
+                                    <option key={s} value={s}>{s}</option>
+                                ))}
+                            </select>
+                            <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none" />
+                        </div>
+                        <div className="relative">
+                            <select
+                                value={tingkatFilter}
+                                onChange={(e) => setTingkatFilter(e.target.value)}
+                                className="h-9 w-32 pl-3 pr-8 text-sm bg-white border border-[#E5E7EB] rounded-lg text-[#1F2937] appearance-none focus:outline-none focus:ring-1"
+                            >
+                                <option value="">Semua Tingkat</option>
+                                {tingkatOptions.map((t) => (
+                                    <option key={t} value={t}>{t}</option>
+                                ))}
+                            </select>
+                            <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none" />
+                        </div>
+                        <div className="relative">
+                            <select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                className="h-9 w-32 pl-3 pr-8 text-sm bg-white border border-[#E5E7EB] rounded-lg text-[#1F2937] appearance-none focus:outline-none focus:ring-1"
+                            >
+                                <option value="">Semua Status</option>
+                                {statusOptions.map((s) => (
+                                    <option key={s} value={s}>{s}</option>
+                                ))}
+                            </select>
+                            <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none" />
+                        </div>
                     </div>
-
-                    <div className="relative" title="Belum tersedia — field belum ada di database">
-                        <select disabled className="h-9 w-32 pl-3 pr-8 text-sm bg-[#F5F7FA] border border-[#E5E7EB] rounded-lg text-[#9CA3AF] appearance-none cursor-not-allowed">
-                            <option>Semua Tingkat</option>
-                        </select>
-                        <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none" />
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => { setSearch(''); setTingkatFilter(''); setStatusFilter(''); setSubjectFilter(''); }}
+                            className="h-9 px-3 rounded-lg border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#6B7280] text-sm flex items-center gap-1.5 transition-colors"
+                        >
+                            <RotateCcw size={14} />
+                            <span>Reset</span>
+                        </button>
+                        <button
+                            disabled
+                            title="Belum tersedia"
+                            className="h-9 px-3 rounded-lg border border-[#E5E7EB] bg-[#F5F7FA] text-[#9CA3AF] text-sm flex items-center gap-1 cursor-not-allowed"
+                        >
+                            <Download size={14} />
+                            <span>Export</span>
+                        </button>
                     </div>
-                    <div className="relative" title="Belum tersedia — field belum ada di database">
-                        <select disabled className="h-9 w-32 pl-3 pr-8 text-sm bg-[#F5F7FA] border border-[#E5E7EB] rounded-lg text-[#9CA3AF] appearance-none cursor-not-allowed">
-                            <option>Semua Status</option>
-                        </select>
-                        <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none" />
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => setSearch('')}
-                        className="h-9 px-3 rounded-lg border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#6B7280] text-sm flex items-center gap-1.5 transition-colors"
-                    >
-                        <RotateCcw size={14} />
-                        <span>Reset</span>
-                    </button>
-                    <button
-                        disabled
-                        title="Belum tersedia"
-                        className="h-9 px-3 rounded-lg border border-[#E5E7EB] bg-[#F5F7FA] text-[#9CA3AF] text-sm flex items-center gap-1.5 cursor-not-allowed"
-                    >
-                        <Download size={14} />
-                        <span>Export</span>
-                    </button>
                 </div>
             </div>
 
@@ -262,13 +346,20 @@ export default function SubjectIndex() {
                                     <tr key={subject.id} className="hover:bg-[#F5F7FA]/60 transition-colors">
                                         <td className="py-2.5 px-4 text-[#9CA3AF]" title="Data belum tersedia">–</td>
                                         <td className="py-2.5 px-4 font-medium text-[#1F2937]">{subject.name}</td>
-                                        <td className="py-2.5 px-4 text-[#9CA3AF]" title="Data belum tersedia">–</td>
-                                        <td className="py-2.5 px-4 text-[#9CA3AF]" title="Data belum tersedia">–</td>
+                                        <td className="py-2.5 px-4 text-[#1F2937]">{subject.tingkat || '-'}</td>
+                                        <td className="py-2.5 px-4 text-[#1F2937]">{subject.guru_pengampu || '-'}</td>
                                         <td className="py-2.5 px-4 text-center">
-                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                                Aktif
-                                            </span>
+                                            {subject.status === 'aktif' || !subject.status ? (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                                    Aktif
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 border border-gray-200">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-gray-500" />
+                                                    {subject.status}
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="py-2.5 px-4">
                                             <div className="flex items-center justify-center gap-1">
@@ -355,15 +446,52 @@ export default function SubjectIndex() {
                         />
                         {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name[0]}</p>}
                     </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label className="block text-sm font-medium text-[#1F2937] mb-1.5">Tingkat</label>
+                            <input
+                                type="text"
+                                value={form.tingkat}
+                                onChange={(e) => setForm({ ...form, tingkat: e.target.value })}
+                                placeholder="Contoh: X, XI, XII"
+                                className="w-full h-9 px-3 text-sm border border-[#E5E7EB] rounded-lg text-[#1F2937] focus:outline-none focus:ring-1"
+                            />
+                            {errors.tingkat && <p className="text-xs text-red-600 mt-1">{errors.tingkat[0]}</p>}
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-[#1F2937] mb-1.5">Guru Pengampu</label>
+                            <input
+                                type="text"
+                                value={form.guru_pengampu}
+                                onChange={(e) => setForm({ ...form, guru_pengampu: e.target.value })}
+                                placeholder="Contoh: Pak Ahmad"
+                                className="w-full h-9 px-3 text-sm border border-[#E5E7EB] rounded-lg text-[#1F2937] focus:outline-none focus:ring-1"
+                            />
+                            {errors.guru_pengampu && <p className="text-xs text-red-600 mt-1">{errors.guru_pengampu[0]}</p>}
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-[#1F2937] mb-1.5">Status</label>
+                        <select
+                            value={form.status}
+                            onChange={(e) => setForm({ ...form, status: e.target.value })}
+                            className="w-full h-9 px-3 text-sm border border-[#E5E7EB] rounded-lg text-[#1F2937] focus:outline-none focus:ring-1"
+                        >
+                            <option value="aktif">Aktif</option>
+                            <option value="nonaktif">Nonaktif</option>
+                        </select>
+                        {errors.status && <p className="text-xs text-red-600 mt-1">{errors.status[0]}</p>}
+                    </div>
 
                     <button
                         type="submit"
-                        className="w-full text-white py-2 rounded-lg text-sm font-medium transition-colors"
+                        disabled={submitting}
+                        className="w-full text-white py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
                         style={{ background: NAVY }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = NAVY_HOVER)}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = NAVY)}
+                        onMouseEnter={(e) => !submitting && (e.currentTarget.style.background = NAVY_HOVER)}
+                        onMouseLeave={(e) => !submitting && (e.currentTarget.style.background = NAVY)}
                     >
-                        Simpan
+                        {submitting ? 'Menyimpan...' : 'Simpan'}
                     </button>
                 </form>
             </Modal>
@@ -381,17 +509,24 @@ export default function SubjectIndex() {
                         <div className="p-3.5 bg-[#F5F7FA] border border-[#E5E7EB] rounded-lg flex items-start justify-between">
                             <div>
                                 <h4 className="text-base font-semibold text-[#1F2937]">{detailTarget.name}</h4>
-                                <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-semibold">
-                                    Aktif
-                                </span>
+                                <div className="mt-1 text-xs text-[#6B7280] space-y-0.5">
+                                    {detailTarget.tingkat && <p>Tingkat: <strong className="text-[#1F2937]">{detailTarget.tingkat}</strong></p>}
+                                    {detailTarget.guru_pengampu && <p>Guru Pengampu: <strong className="text-[#1F2937]">{detailTarget.guru_pengampu}</strong></p>}
+                                </div>
+                                {detailTarget.status === 'aktif' || !detailTarget.status ? (
+                                    <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-semibold">
+                                        Aktif
+                                    </span>
+                                ) : (
+                                    <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200 text-[11px] font-semibold">
+                                        {detailTarget.status}
+                                    </span>
+                                )}
                             </div>
                             <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: '#EFF4FF', color: NAVY }}>
                                 <BookOpen size={20} />
                             </div>
                         </div>
-                        <p className="text-xs text-[#9CA3AF] mt-3">
-                            Detail tambahan (kode, tingkat, guru pengampu, beban jam, jumlah kelas) belum tersedia — menunggu relasi & data terkait.
-                        </p>
                         <div className="flex justify-end pt-4">
                             <button
                                 onClick={() => setDetailTarget(null)}

@@ -12,7 +12,7 @@ class SubjectController extends Controller
     public function index()
     {
         return response()->json([
-            'data' => Subject::orderBy('name')->get(['id', 'name']),
+            'data' => Subject::orderBy('name')->get(['id', 'name', 'tingkat', 'guru_pengampu']),
         ]);
     }
 
@@ -20,6 +20,9 @@ class SubjectController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', Rule::unique('subjects', 'name')],
+            'tingkat' => ['nullable', 'string', 'max:255'],
+            'guru_pengampu' => ['nullable', 'string', 'max:255'],
+            'status' => ['nullable', 'string', 'max:255'],
         ]);
 
         $subject = Subject::create($validated);
@@ -34,6 +37,9 @@ class SubjectController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', Rule::unique('subjects', 'name')->ignore($subject->id)],
+            'tingkat' => ['nullable', 'string', 'max:255'],
+            'guru_pengampu' => ['nullable', 'string', 'max:255'],
+            'status' => ['nullable', 'string', 'max:255'],
         ]);
 
         $subject->update($validated);
@@ -62,7 +68,7 @@ class SubjectController extends Controller
     public function subjectsList()
     {
         return response()->json([
-            'data' => Subject::select('id', 'name')->orderBy('name')->get(),
+            'data' => Subject::select('id', 'name', 'tingkat', 'guru_pengampu', 'status')->orderBy('name')->get(),
         ]);
     }
 }
