@@ -17,6 +17,10 @@ class ClassRoomController extends Controller
             ->map(fn ($classRoom) => [
                 'id' => $classRoom->id,
                 'name' => $classRoom->name,
+                'tingkat' => $classRoom->tingkat,
+                'jurusan' => $classRoom->jurusan,
+                'wali_kelas' => $classRoom->wali_kelas,
+                'status' => $classRoom->status,
                 'total_siswa' => $classRoom->students_count,
             ]);
 
@@ -27,13 +31,25 @@ class ClassRoomController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', Rule::unique('classes', 'name')],
+            'tingkat' => ['nullable', 'string', 'max:255'],
+            'jurusan' => ['nullable', 'string', 'max:255'],
+            'wali_kelas' => ['nullable', 'string', 'max:255'],
+            'status' => ['nullable', 'string', 'max:255'],
         ]);
 
         $classRoom = ClassRoom::create($validated);
 
         return response()->json([
             'message' => 'Kelas berhasil ditambahkan.',
-            'data' => ['id' => $classRoom->id, 'name' => $classRoom->name, 'total_siswa' => 0],
+            'data' => [
+                'id' => $classRoom->id,
+                'name' => $classRoom->name,
+                'tingkat' => $classRoom->tingkat,
+                'jurusan' => $classRoom->jurusan,
+                'wali_kelas' => $classRoom->wali_kelas,
+                'status' => $classRoom->status,
+                'total_siswa' => 0,
+            ],
         ], 201);
     }
 
@@ -41,6 +57,10 @@ class ClassRoomController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', Rule::unique('classes', 'name')->ignore($classRoom->id)],
+            'tingkat' => ['nullable', 'string', 'max:255'],
+            'jurusan' => ['nullable', 'string', 'max:255'],
+            'wali_kelas' => ['nullable', 'string', 'max:255'],
+            'status' => ['nullable', 'string', 'max:255'],
         ]);
 
         $classRoom->update($validated);
@@ -50,6 +70,10 @@ class ClassRoomController extends Controller
             'data' => [
                 'id' => $classRoom->id,
                 'name' => $classRoom->name,
+                'tingkat' => $classRoom->tingkat,
+                'jurusan' => $classRoom->jurusan,
+                'wali_kelas' => $classRoom->wali_kelas,
+                'status' => $classRoom->status,
                 'total_siswa' => $classRoom->students()->count(),
             ],
         ]);
@@ -73,7 +97,7 @@ class ClassRoomController extends Controller
     public function classesList()
     {
         return response()->json([
-            'data' => ClassRoom::select('id', 'name')->orderBy('name')->get(),
+            'data' => ClassRoom::select('id', 'name', 'tingkat', 'jurusan', 'wali_kelas', 'status')->orderBy('name')->get(),
         ]);
     }
 }

@@ -15,6 +15,8 @@ import {
     Monitor,
     ChevronLeft,
     ChevronRight,
+    AlertTriangle,
+    Loader2,
 } from 'lucide-react';
 import api from '../../../Lib/axios';
 
@@ -42,6 +44,8 @@ export default function SessionIndex() {
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [qrModalSessionId, setQrModalSessionId] = useState(null);
+    const [closeConfirm, setCloseConfirm] = useState({ open: false, id: null });
+    const [isClosing, setIsClosing] = useState(false);
 
     const fetchSessions = async () => {
         setLoading(true);
@@ -129,12 +133,17 @@ export default function SessionIndex() {
     };
 
     const handleTutupSesi = async (id) => {
-        if (!confirm('Tutup sesi absensi ini? Siswa tidak akan bisa scan QR lagi setelah ditutup.')) {
-            return;
-        }
+        setCloseConfirm({ open: true, id });
+    };
+
+    const confirmTutupSesi = async () => {
+        const { id } = closeConfirm;
+        setCloseConfirm({ open: false, id: null });
+        setIsClosing(true);
         await api.post(`/teacher/sessions/${id}/close`);
         setDetails((prev) => ({ ...prev, [id]: undefined }));
         await fetchSessions();
+        setIsClosing(false);
     };
 
     const handleSessionCreated = async (newId) => {
@@ -394,7 +403,7 @@ export default function SessionIndex() {
                                                             <Monitor size={13} className="inline" />
                                                         </button>
                                                         <button
-                                                            onClick={() => handleTutupSesi(s.id)}
+                                                            onClick={() => setCloseConfirm({ open: true, id: s.id })}
                                                             className="px-2 py-1 bg-red-50 border border-red-200 hover:bg-red-100 text-red-600 rounded text-[11px] font-medium"
                                                         >
                                                             Tutup
@@ -408,36 +417,38 @@ export default function SessionIndex() {
                             </table>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 border-t border-[#E5E7EB] gap-3">
-                            <p className="text-xs text-[#6B7280]">
-                                Menampilkan <span className="font-semibold text-[#1F2937]">{(page - 1) * PAGE_SIZE + 1}-{Math.min(page * PAGE_SIZE, sorted.length)}</span> dari <span className="font-semibold text-[#1F2937]">{sorted.length}</span> sesi
-                            </p>
-                            <div className="flex items-center gap-1">
-                                <button
-                                    disabled={page === 1}
-                                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                                    className="px-2.5 py-1 text-xs border border-[#E5E7EB] rounded hover:bg-[#F5F7FA] disabled:opacity-40 flex items-center gap-1"
-                                >
-                                    <ChevronLeft size={14} /> Sebelumnya
-                                </button>
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                        {totalPages > 1 && (
+                            <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 border-t border-[#E5E7EB] gap-3">
+                                <p className="text-xs text-[#6B7280]">
+                                    Menampilkan <span className="font-semibold text-[#1F2937]">{(page - 1) * PAGE_SIZE + 1}-{Math.min(page * PAGE_SIZE, sorted.length)}</span> dari <span className="font-semibold text-[#1F2937]">{sorted.length}</span> sesi
+                                </p>
+                                <div className="flex items-center gap-1">
                                     <button
-                                        key={p}
-                                        onClick={() => setPage(p)}
-                                        className={`w-7 h-7 text-xs font-semibold rounded ${p === page ? 'bg-[#1E3A5F] text-white' : 'border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937]'}`}
+                                        disabled={page === 1}
+                                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                        className="px-2.5 py-1 text-xs border border-[#E5E7EB] rounded hover:bg-[#F5F7FA] disabled:opacity-40 flex items-center gap-1"
                                     >
-                                        {p}
+                                        <ChevronLeft size={14} /> Sebelumnya
                                     </button>
-                                ))}
-                                <button
-                                    disabled={page === totalPages}
-                                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                                    className="px-2.5 py-1 text-xs border border-[#E5E7EB] rounded hover:bg-[#F5F7FA] disabled:opacity-40 flex items-center gap-1"
-                                >
-                                    Berikutnya <ChevronRight size={14} />
-                                </button>
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                                        <button
+                                            key={p}
+                                            onClick={() => setPage(p)}
+                                            className={`w-7 h-7 text-xs font-semibold rounded ${p === page ? 'bg-[#1E3A5F] text-white' : 'border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937]'}`}
+                                        >
+                                            {p}
+                                        </button>
+                                    ))}
+                                    <button
+                                        disabled={page === totalPages}
+                                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                                        className="px-2.5 py-1 text-xs border border-[#E5E7EB] rounded hover:bg-[#F5F7FA] disabled:opacity-40 flex items-center gap-1"
+                                    >
+                                        Berikutnya <ChevronRight size={14} />
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </>
                 )}
             </div>
@@ -447,6 +458,52 @@ export default function SessionIndex() {
             )}
             {qrModalSessionId && (
                 <QrModal sessionId={qrModalSessionId} onClose={() => setQrModalSessionId(null)} onClosed={fetchSessions} />
+            )}
+
+            {closeConfirm.open && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/40" onClick={() => setCloseConfirm({ open: false, id: null })} />
+                    <div className="relative bg-white rounded-xl border border-[#E5E7EB] shadow-xl max-w-sm w-full p-5">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-9 h-9 rounded-lg bg-red-50 text-red-600 border border-red-200 flex items-center justify-center">
+                                    <AlertTriangle size={18} />
+                                </div>
+                                <h3 className="text-sm font-semibold text-gray-900">Tutup Sesi Absensi?</h3>
+                            </div>
+                            <button
+                                onClick={() => setCloseConfirm({ open: false, id: null })}
+                                className="text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <p className="text-sm text-gray-600 mb-1">
+                            Sesi ini akan ditutup dan siswa tidak akan bisa scan QR lagi.
+                        </p>
+                        <p className="text-sm text-gray-500 mb-5">
+                            Pastikan semua kehadiran sudah tercatat sebelum menutup sesi.
+                        </p>
+
+                        <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-100">
+                            <button
+                                onClick={() => setCloseConfirm({ open: false, id: null })}
+                                className="h-9 px-4 rounded-lg border border-[#E5E7EB] hover:bg-[#F5F7FA] text-gray-700 text-sm font-medium transition-colors"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={confirmTutupSesi}
+                                disabled={isClosing}
+                                className="h-9 px-4 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+                            >
+                                {isClosing && <Loader2 size={16} className="animate-spin" />}
+                                <span>{isClosing ? 'Menutup...' : 'Ya, Tutup'}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
@@ -531,6 +588,7 @@ function CreateSessionModal({ onClose, onCreated }) {
 function QrModal({ sessionId, onClose, onClosed }) {
     const [session, setSession] = useState(null);
     const [isClosing, setIsClosing] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
 
     const fetchSession = async () => {
         try {
@@ -546,7 +604,7 @@ function QrModal({ sessionId, onClose, onClosed }) {
     }, [sessionId]);
 
     const handleTutup = async () => {
-        if (!confirm('Tutup sesi absensi ini?')) return;
+        setShowConfirm(false);
         setIsClosing(true);
         try {
             await api.post(`/teacher/sessions/${sessionId}/close`);
@@ -591,7 +649,7 @@ function QrModal({ sessionId, onClose, onClosed }) {
                         <span>{session.waktu_mulai} - {session.waktu_selesai} WIB</span>
                     </div>
                     {session.status === 'active' && (
-                        <button onClick={handleTutup} disabled={isClosing} className="px-4 py-1.5 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 text-sm font-semibold rounded-lg disabled:opacity-50">
+                        <button onClick={() => setShowConfirm(true)} disabled={isClosing} className="px-4 py-1.5 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 text-sm font-semibold rounded-lg disabled:opacity-50">
                             {isClosing ? 'Menutup...' : 'Tutup Sesi'}
                         </button>
                     )}
@@ -599,6 +657,33 @@ function QrModal({ sessionId, onClose, onClosed }) {
                 <div className="px-4 py-3 border-t border-[#E5E7EB] flex justify-end">
                     <button onClick={onClose} className="px-4 py-1.5 bg-[#1E3A5F] hover:bg-[#16304F] text-white text-sm font-semibold rounded-lg">Tutup Pratinjau</button>
                 </div>
+
+                {showConfirm && (
+                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-2xl max-w-sm w-full p-5">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-9 h-9 rounded-lg bg-red-50 text-red-600 border border-red-200 flex items-center justify-center">
+                                        <AlertTriangle size={18} />
+                                    </div>
+                                    <h3 className="text-sm font-semibold text-gray-900">Tutup Sesi Absensi?</h3>
+                                </div>
+                                <button onClick={() => setShowConfirm(false)} className="text-gray-400 hover:text-gray-600">
+                                    <X size={18} />
+                                </button>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-1">Sesi <strong>{session.kelas}</strong> — <strong>{session.mata_pelajaran}</strong> akan ditutup.</p>
+                            <p className="text-sm text-gray-500 mb-5">Siswa tidak akan bisa scan QR lagi setelah sesi ditutup.</p>
+                            <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-100">
+                                <button onClick={() => setShowConfirm(false)} className="h-9 px-4 rounded-lg border border-[#E5E7EB] hover:bg-[#F5F7FA] text-gray-700 text-sm font-medium transition-colors">Batal</button>
+                                <button onClick={handleTutup} disabled={isClosing} className="h-9 px-4 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-50 transition-colors flex items-center gap-2">
+                                    {isClosing && <Loader2 size={16} className="animate-spin" />}
+                                    <span>{isClosing ? 'Menutup...' : 'Ya, Tutup'}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -120,8 +120,59 @@ export default function TeacherHistory() {
         new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(iso));
 
     return (
-        <div className="space-y-5">
-            {/* HEADER */}
+        <>
+            {/* PRINT-ONLY REKAP */}
+            <div id="print-rekap" style={{ display: 'none' }}>
+                <div className="px-6 py-4">
+                    <h2 className="text-lg font-bold text-[#1E3A5F] mb-1">Rekap Riwayat Absensi</h2>
+                    <p className="text-xs text-[#6B7280] mb-4">
+                        Dicetak pada: {new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date())}
+                    </p>
+
+                    <table className="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr className="border-b border-[#E5E7EB] text-xs uppercase tracking-wide text-[#6B7280]">
+                                <th className="py-2 px-3">Mata Pelajaran</th>
+                                <th className="py-2 px-3">Kelas</th>
+                                <th className="py-2 px-3">Tanggal</th>
+                                <th className="py-2 px-3">Waktu</th>
+                                <th className="py-2 px-3 text-center">Hadir</th>
+                                <th className="py-2 px-3 text-center">Izin</th>
+                                <th className="py-2 px-3 text-center">Sakit</th>
+                                <th className="py-2 px-3 text-center">Alpa</th>
+                                <th className="py-2 px-3 text-center">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#E5E7EB]">
+                            {sorted.map((item) => {
+                                const d = item.detail;
+                                const siswa = d?.siswa ?? [];
+                                const hadir = siswa.filter((s) => s.status === 'hadir').length;
+                                const izin = siswa.filter((s) => s.status === 'izin').length;
+                                const sakit = siswa.filter((s) => s.status === 'sakit').length;
+                                const alpa = siswa.filter((s) => s.status === 'alpa').length;
+                                const total = hadir + izin + sakit + alpa;
+                                return (
+                                    <tr key={item.id} className="text-sm">
+                                        <td className="py-2 px-3 font-medium">{item.mata_pelajaran}</td>
+                                        <td className="py-2 px-3">{item.kelas}</td>
+                                        <td className="py-2 px-3">{fmtDate(item.tanggal)}</td>
+                                        <td className="py-2 px-3">{item.waktu_mulai} - {item.waktu_selesai}</td>
+                                        <td className="py-2 px-3 text-center text-emerald-700">{hadir}</td>
+                                        <td className="py-2 px-3 text-center text-amber-700">{izin}</td>
+                                        <td className="py-2 px-3 text-center text-blue-700">{sakit}</td>
+                                        <td className="py-2 px-3 text-center text-rose-700">{alpa}</td>
+                                        <td className="py-2 px-3 text-center font-semibold">{total}</td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div className="space-y-5">
+                {/* HEADER */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-xl font-semibold text-[#1E3A5F] tracking-tight">Riwayat Absensi</h1>
@@ -132,7 +183,7 @@ export default function TeacherHistory() {
                 <div className="flex items-center gap-2.5">
                     <button
                         onClick={() => window.print()}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] text-xs font-semibold rounded-lg transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] text-xs font-semibold rounded-lg transition-colors print:hidden"
                     >
                         <Printer size={16} />
                         <span>Cetak Rekap</span>
@@ -326,27 +377,29 @@ export default function TeacherHistory() {
                             </table>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 border-t border-[#E5E7EB] gap-3">
-                            <p className="text-xs text-[#6B7280]">
-                                Menampilkan <span className="font-semibold text-[#1F2937]">{(page - 1) * PAGE_SIZE + 1}-{Math.min(page * PAGE_SIZE, sorted.length)}</span> dari <span className="font-semibold text-[#1F2937]">{sorted.length}</span> riwayat sesi
-                            </p>
-                            <div className="flex items-center gap-1">
-                                <button disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}
-                                    className="px-2.5 py-1 text-xs border border-[#E5E7EB] rounded hover:bg-[#F5F7FA] disabled:opacity-40 flex items-center gap-1">
-                                    <ChevronLeft size={14} /> Sebelumnya
-                                </button>
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                                    <button key={p} onClick={() => setPage(p)}
-                                        className={`w-7 h-7 text-xs font-semibold rounded ${p === page ? 'bg-[#1E3A5F] text-white' : 'border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937]'}`}>
-                                        {p}
+                        {totalPages > 1 && (
+                            <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 border-t border-[#E5E7EB] gap-3">
+                                <p className="text-xs text-[#6B7280]">
+                                    Menampilkan <span className="font-semibold text-[#1F2937]">{(page - 1) * PAGE_SIZE + 1}-{Math.min(page * PAGE_SIZE, sorted.length)}</span> dari <span className="font-semibold text-[#1F2937]">{sorted.length}</span> riwayat sesi
+                                </p>
+                                <div className="flex items-center gap-1">
+                                    <button disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                        className="px-2.5 py-1 text-xs border border-[#E5E7EB] rounded hover:bg-[#F5F7FA] disabled:opacity-40 flex items-center gap-1">
+                                        <ChevronLeft size={14} /> Sebelumnya
                                     </button>
-                                ))}
-                                <button disabled={page === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                                    className="px-2.5 py-1 text-xs border border-[#E5E7EB] rounded hover:bg-[#F5F7FA] disabled:opacity-40 flex items-center gap-1">
-                                    Berikutnya <ChevronRight size={14} />
-                                </button>
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                                        <button key={p} onClick={() => setPage(p)}
+                                            className={`w-7 h-7 text-xs font-semibold rounded ${p === page ? 'bg-[#1E3A5F] text-white' : 'border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937]'}`}>
+                                            {p}
+                                        </button>
+                                    ))}
+                                    <button disabled={page === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                                        className="px-2.5 py-1 text-xs border border-[#E5E7EB] rounded hover:bg-[#F5F7FA] disabled:opacity-40 flex items-center gap-1">
+                                        Berikutnya <ChevronRight size={14} />
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </>
                 )}
             </div>
@@ -408,5 +461,6 @@ export default function TeacherHistory() {
                 </div>
             )}
         </div>
+    </>
     );
 }

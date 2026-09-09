@@ -611,7 +611,7 @@ export default function ReportIndex() {
                     </div>
                 )}
 
-                {filteredSiswa.length > 0 && (
+                {filteredSiswa.length > 0 && studentTotalPages > 1 && (
                     <div className="p-3 border-t border-[#E5E7EB] flex items-center justify-between text-sm text-[#6B7280]">
                         <span>
                             Halaman <strong className="text-[#1F2937]">{studentPage}</strong> dari{' '}

@@ -113,45 +113,25 @@ export default function TeacherScheduleIndex() {
             {/* JADWAL GRID */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {DAYS.map((day) => {
-                    const items = grouped[day] || [];
+                    const dayClasses = useMemo(() => {
+                        const set = new Set(grouped[day]?.map((i) => i.class) || []);
+                        return [...set].sort();
+                    }, [grouped, day]);
+
+                    const daySubjects = useMemo(() => {
+                        const set = new Set(grouped[day]?.map((i) => i.subject) || []);
+                        return [...set].sort();
+                    }, [grouped, day]);
+
                     return (
-                        <div key={day} className="bg-white border border-[#E5E7EB] rounded-lg shadow-sm overflow-hidden">
-                            <div className="px-4 py-2.5 border-b border-[#E5E7EB] bg-[#F5F7FA]">
-                                <h3 className="text-sm font-bold text-[#1E3A5F]">{day}</h3>
-                            </div>
-                            <div className="p-3 space-y-2">
-                                {items.length === 0 && (
-                                    <p className="text-[11px] text-[#9CA3AF] italic">Tidak ada jadwal</p>
-                                )}
-                                {items.map((item) => (
-                                    <div key={item.id} className="p-3 rounded border border-[#E5E7EB] bg-white hover:bg-[#F8FAFC] transition-colors group">
-                                        <div className="flex items-start justify-between gap-2">
-                                            <div className="space-y-1.5">
-                                                <p className="text-xs font-bold text-[#1F2937]">{item.subject}</p>
-                                                <p className="text-[11px] text-[#6B7280] font-medium">{item.class}</p>
-                                                <div className="flex items-center gap-1 text-[11px] text-[#6B7280]">
-                                                    <Clock size={12} />
-                                                    <span>{item.start_time} - {item.end_time}</span>
-                                                </div>
-                                                {item.room && (
-                                                    <div className="flex items-center gap-1 text-[11px] text-[#6B7280]">
-                                                        <MapPin size={12} />
-                                                        <span>{item.room}</span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <button
-                                                onClick={() => handleDelete(item.id)}
-                                                className="text-[#9CA3AF] hover:text-red-600 p-1 rounded hover:bg-red-50 transition-colors"
-                                                title="Hapus"
-                                            >
-                                                <Trash2 size={14} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                        <DayCard
+                            key={day}
+                            day={day}
+                            items={grouped[day] || []}
+                            classes={dayClasses}
+                            subjects={daySubjects}
+                            onDelete={handleDelete}
+                        />
                     );
                 })}
             </div>
@@ -213,6 +193,85 @@ export default function TeacherScheduleIndex() {
                     </div>
                 </div>
             )}
+        </div>
+    );
+}
+
+function DayCard({ day, items, classes, subjects, onDelete }) {
+    const [subjectFilter, setSubjectFilter] = useState('');
+    const [classFilter, setClassFilter] = useState('');
+
+    const filtered = items.filter((item) => {
+        const matchSubject = subjectFilter ? item.subject === subjectFilter : true;
+        const matchClass = classFilter ? item.class === classFilter : true;
+        return matchSubject && matchClass;
+    });
+
+    return (
+        <div className="bg-white border border-[#E5E7EB] rounded-lg shadow-sm overflow-hidden flex flex-col">
+            <div className="px-4 py-2.5 border-b border-[#E5E7EB] bg-[#F5F7FA]">
+                <h3 className="text-sm font-bold text-[#1E3A5F]">{day}</h3>
+            </div>
+            <div className="p-3 space-y-2.5 flex-1">
+                <div className="grid grid-cols-2 gap-2">
+                    <div>
+                        <label className="block text-[10px] font-bold text-[#6B7280] uppercase mb-0.5">Mata Pelajaran</label>
+                        <select
+                            value={subjectFilter}
+                            onChange={(e) => setSubjectFilter(e.target.value)}
+                            className="w-full h-8 rounded border border-[#E5E7EB] px-2 text-xs focus:outline-none focus:border-[#1E3A5F]"
+                        >
+                            <option value="">Semua</option>
+                            {subjects.map((s) => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-[10px] font-bold text-[#6B7280] uppercase mb-0.5">Kelas</label>
+                        <select
+                            value={classFilter}
+                            onChange={(e) => setClassFilter(e.target.value)}
+                            className="w-full h-8 rounded border border-[#E5E7EB] px-2 text-xs focus:outline-none focus:border-[#1E3A5F]"
+                        >
+                            <option value="">Semua</option>
+                            {classes.map((c) => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                    </div>
+                </div>
+
+                {filtered.length === 0 ? (
+                    <p className="text-[11px] text-[#9CA3AF] italic">Tidak ada jadwal</p>
+                ) : (
+                    <div className="space-y-2">
+                        {filtered.map((item) => (
+                            <div key={item.id} className="p-2.5 rounded border border-[#E5E7EB] bg-white hover:bg-[#F8FAFC] transition-colors">
+                                <div className="flex items-start justify-between gap-2">
+                                    <div className="space-y-1">
+                                        <p className="text-xs font-bold text-[#1F2937]">{item.subject}</p>
+                                        <p className="text-[11px] text-[#6B7280] font-medium">{item.class}</p>
+                                        <div className="flex items-center gap-1 text-[11px] text-[#6B7280]">
+                                            <Clock size={12} />
+                                            <span>{item.start_time} - {item.end_time}</span>
+                                        </div>
+                                        {item.room && (
+                                            <div className="flex items-center gap-1 text-[11px] text-[#6B7280]">
+                                                <MapPin size={12} />
+                                                <span>{item.room}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <button
+                                        onClick={() => onDelete(item.id)}
+                                        className="text-[#9CA3AF] hover:text-red-600 p-1 rounded hover:bg-red-50 transition-colors"
+                                        title="Hapus"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

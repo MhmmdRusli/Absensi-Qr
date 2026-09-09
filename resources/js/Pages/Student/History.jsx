@@ -505,46 +505,48 @@ export default function History() {
                             </table>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 border-t border-[#E5E7EB] gap-3">
-                            <div className="text-xs text-[#6B7280]">
-                                Menampilkan{' '}
-                                <span className="font-semibold text-[#1F2937]">
-                                    {(page - 1) * ITEMS_PER_PAGE + 1}–{Math.min(page * ITEMS_PER_PAGE, filteredRiwayat.length)}
-                                </span>{' '}
-                                dari <span className="font-semibold text-[#1F2937]">{filteredRiwayat.length}</span> data absensi
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <button
-                                    disabled={page === 1}
-                                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                                    className="h-8 px-2.5 text-xs font-medium text-[#4B5563] bg-white border border-[#E5E7EB] rounded hover:bg-[#F5F7FA] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
-                                >
-                                    <ChevronLeft size={15} />
-                                    Prev
-                                </button>
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                        {totalPages > 1 && (
+                            <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 border-t border-[#E5E7EB] gap-3">
+                                <div className="text-xs text-[#6B7280]">
+                                    Menampilkan{' '}
+                                    <span className="font-semibold text-[#1F2937]">
+                                        {(page - 1) * ITEMS_PER_PAGE + 1}–{Math.min(page * ITEMS_PER_PAGE, filteredRiwayat.length)}
+                                    </span>{' '}
+                                    dari <span className="font-semibold text-[#1F2937]">{filteredRiwayat.length}</span> data absensi
+                                </div>
+                                <div className="flex items-center gap-1">
                                     <button
-                                        key={p}
-                                        onClick={() => setPage(p)}
-                                        className={`h-8 w-8 text-xs font-semibold rounded ${
-                                            p === page
-                                                ? 'bg-[#1E3A5F] text-white'
-                                                : 'bg-white border border-[#E5E7EB] text-[#4B5563] hover:bg-[#F5F7FA]'
-                                        }`}
+                                        disabled={page === 1}
+                                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                        className="h-8 px-2.5 text-xs font-medium text-[#4B5563] bg-white border border-[#E5E7EB] rounded hover:bg-[#F5F7FA] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
                                     >
-                                        {p}
+                                        <ChevronLeft size={15} />
+                                        Prev
                                     </button>
-                                ))}
-                                <button
-                                    disabled={page === totalPages}
-                                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                                    className="h-8 px-2.5 text-xs font-medium text-[#4B5563] bg-white border border-[#E5E7EB] rounded hover:bg-[#F5F7FA] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
-                                >
-                                    Next
-                                    <ChevronRight size={15} />
-                                </button>
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                                        <button
+                                            key={p}
+                                            onClick={() => setPage(p)}
+                                            className={`h-8 w-8 text-xs font-semibold rounded ${
+                                                p === page
+                                                    ? 'bg-[#1E3A5F] text-white'
+                                                    : 'bg-white border border-[#E5E7EB] text-[#4B5563] hover:bg-[#F5F7FA]'
+                                            }`}
+                                        >
+                                            {p}
+                                        </button>
+                                    ))}
+                                    <button
+                                        disabled={page === totalPages}
+                                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                                        className="h-8 px-2.5 text-xs font-medium text-[#4B5563] bg-white border border-[#E5E7EB] rounded hover:bg-[#F5F7FA] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+                                    >
+                                        Next
+                                        <ChevronRight size={15} />
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </>
                 )}
             </div>

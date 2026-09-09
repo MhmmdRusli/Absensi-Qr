@@ -7,7 +7,7 @@ import {
     FolderOpen, TriangleAlert, ChevronDown, X,
 } from 'lucide-react';
 
-const emptyForm = { name: '' };
+const emptyForm = { name: '', tingkat: '', jurusan: '', wali_kelas: '', status: 'aktif' };
 const PAGE_SIZE = 10;
 
 const NAVY = '#1E3A5F';
@@ -24,54 +24,89 @@ export default function ClassRoomIndex() {
 
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
+    const [tingkatFilter, setTingkatFilter] = useState('');
+    const [jurusanFilter, setJurusanFilter] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
 
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [deleteError, setDeleteError] = useState('');
     const [detailTarget, setDetailTarget] = useState(null);
+    const [submitting, setSubmitting] = useState(false);
 
     const fetchClasses = async () => {
-        const response = await api.get('/admin/classes');
-        setClasses(response.data.data);
-        setLoading(false);
+        try {
+            const response = await api.get('/admin/classes');
+            setClasses(response.data.data);
+        } catch (err) {
+            setNotice('Gagal memuat data kelas. Silakan muat ulang halaman.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
         fetchClasses();
     }, []);
 
+    useEffect(() => {
+        if (notice) {
+            const timer = setTimeout(() => setNotice(''), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [notice]);
+
     const openCreateModal = () => {
         setEditingId(null);
         setForm(emptyForm);
         setErrors({});
+        setNotice('');
         setIsModalOpen(true);
     };
 
     const openEditModal = (classRoom) => {
         setEditingId(classRoom.id);
-        setForm({ name: classRoom.name });
+        setForm({
+            name: classRoom.name,
+            tingkat: classRoom.tingkat || '',
+            jurusan: classRoom.jurusan || '',
+            wali_kelas: classRoom.wali_kelas || '',
+            status: classRoom.status || 'aktif',
+        });
         setErrors({});
+        setNotice('');
         setIsModalOpen(true);
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setErrors({});
+        setNotice('');
+        setSubmitting(true);
 
         try {
+            let response;
             if (editingId) {
-                const response = await api.put(`/admin/classes/${editingId}`, form);
-                setNotice(response.data.message);
+                response = await api.put(`/admin/classes/${editingId}`, form);
             } else {
-                const response = await api.post('/admin/classes', form);
-                setNotice(response.data.message);
+                response = await api.post('/admin/classes', form);
             }
+            console.log('API response:', response.data);
+            setNotice(response.data.message);
 
             setIsModalOpen(false);
-            fetchClasses();
+            await fetchClasses();
         } catch (err) {
+            console.error('Submit error:', err.response?.data || err.message);
             if (err.response?.status === 422) {
                 setErrors(err.response.data.errors ?? { name: [err.response.data.message] });
+            } else if (err.response?.status === 401 || err.response?.status === 403) {
+                setNotice('Sesi Anda telah berakhir. Silakan login kembali.');
+            } else {
+                const message = err.response?.data?.message || err.message || 'Terjadi kesalahan. Silakan coba lagi.';
+                setNotice(message);
             }
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -97,19 +132,44 @@ export default function ClassRoomIndex() {
 
     const filteredClasses = useMemo(() => {
         const q = search.trim().toLowerCase();
-        if (!q) return classes;
-        return classes.filter((c) => c.name.toLowerCase().includes(q));
-    }, [classes, search]);
+        return classes.filter((c) => {
+            const matchesSearch = !q || c.name.toLowerCase().includes(q);
+            const matchesTingkat = !tingkatFilter || c.tingkat === tingkatFilter;
+            const matchesJurusan = !jurusanFilter || c.jurusan === jurusanFilter;
+            const matchesStatus = !statusFilter || c.status === statusFilter;
+            return matchesSearch && matchesTingkat && matchesJurusan && matchesStatus;
+        });
+    }, [classes, search, tingkatFilter, jurusanFilter, statusFilter]);
 
     const totalPages = Math.max(1, Math.ceil(filteredClasses.length / PAGE_SIZE));
     const pagedClasses = filteredClasses.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-    useEffect(() => setPage(1), [search]);
+    useEffect(() => setPage(1), [search, tingkatFilter, jurusanFilter, statusFilter]);
 
     const totalSiswaKeseluruhan = useMemo(
         () => classes.reduce((sum, c) => sum + (c.total_siswa || 0), 0),
         [classes]
     );
+
+    const totalKelasAktif = useMemo(
+        () => classes.filter((c) => (c.status || 'aktif') === 'aktif').length,
+        [classes]
+    );
+
+    const tingkatOptions = useMemo(() => {
+        const values = classes.map((c) => c.tingkat).filter(Boolean);
+        return [...new Set(values)].sort();
+    }, [classes]);
+
+    const jurusanOptions = useMemo(() => {
+        const values = classes.map((c) => c.jurusan).filter(Boolean);
+        return [...new Set(values)].sort();
+    }, [classes]);
+
+    const statusOptions = useMemo(() => {
+        const values = classes.map((c) => c.status).filter(Boolean);
+        return [...new Set(values)].sort();
+    }, [classes]);
 
     return (
         <div className="max-w-7xl mx-auto flex flex-col gap-6">
@@ -155,8 +215,8 @@ export default function ClassRoomIndex() {
                 <div className="bg-white border border-[#E5E7EB] rounded-xl p-4 flex items-center justify-between shadow-sm">
                     <div className="flex flex-col">
                         <span className="text-xs font-semibold text-[#6B7280] uppercase tracking-wide">Kelas Aktif</span>
-                        <span className="text-2xl font-semibold text-[#1F2937] mt-1">–</span>
-                        <span className="text-xs text-[#6B7280] mt-2">Menunggu field status</span>
+                        <span className="text-2xl font-semibold text-[#1F2937] mt-1">{totalKelasAktif}</span>
+                        <span className="text-xs text-[#6B7280] mt-2">Dari {classes.length} kelas</span>
                     </div>
                     <div className="w-11 h-11 rounded-lg flex items-center justify-center bg-emerald-50 text-emerald-600 border border-emerald-200">
                         <CheckCircle2 size={22} />
@@ -188,21 +248,42 @@ export default function ClassRoomIndex() {
                         />
                     </div>
 
-                    <div className="relative" title="Belum tersedia — field belum ada di database">
-                        <select disabled className="h-9 w-32 pl-3 pr-8 text-sm bg-[#F5F7FA] border border-[#E5E7EB] rounded-lg text-[#9CA3AF] appearance-none cursor-not-allowed">
-                            <option>Semua Tingkat</option>
+                    <div className="relative">
+                        <select
+                            value={tingkatFilter}
+                            onChange={(e) => setTingkatFilter(e.target.value)}
+                            className="h-9 w-32 pl-3 pr-8 text-sm bg-white border border-[#E5E7EB] rounded-lg text-[#1F2937] appearance-none focus:outline-none focus:ring-1"
+                        >
+                            <option value="">Semua Tingkat</option>
+                            {tingkatOptions.map((t) => (
+                                <option key={t} value={t}>{t}</option>
+                            ))}
                         </select>
                         <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none" />
                     </div>
-                    <div className="relative" title="Belum tersedia — field belum ada di database">
-                        <select disabled className="h-9 w-32 pl-3 pr-8 text-sm bg-[#F5F7FA] border border-[#E5E7EB] rounded-lg text-[#9CA3AF] appearance-none cursor-not-allowed">
-                            <option>Semua Jurusan</option>
+                    <div className="relative">
+                        <select
+                            value={jurusanFilter}
+                            onChange={(e) => setJurusanFilter(e.target.value)}
+                            className="h-9 w-32 pl-3 pr-8 text-sm bg-white border border-[#E5E7EB] rounded-lg text-[#1F2937] appearance-none focus:outline-none focus:ring-1"
+                        >
+                            <option value="">Semua Jurusan</option>
+                            {jurusanOptions.map((j) => (
+                                <option key={j} value={j}>{j}</option>
+                            ))}
                         </select>
                         <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none" />
                     </div>
-                    <div className="relative" title="Belum tersedia — field belum ada di database">
-                        <select disabled className="h-9 w-32 pl-3 pr-8 text-sm bg-[#F5F7FA] border border-[#E5E7EB] rounded-lg text-[#9CA3AF] appearance-none cursor-not-allowed">
-                            <option>Semua Status</option>
+                    <div className="relative">
+                        <select
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                            className="h-9 w-32 pl-3 pr-8 text-sm bg-white border border-[#E5E7EB] rounded-lg text-[#1F2937] appearance-none focus:outline-none focus:ring-1"
+                        >
+                            <option value="">Semua Status</option>
+                            {statusOptions.map((s) => (
+                                <option key={s} value={s}>{s}</option>
+                            ))}
                         </select>
                         <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none" />
                     </div>
@@ -210,7 +291,7 @@ export default function ClassRoomIndex() {
 
                 <div className="flex items-center gap-2">
                     <button
-                        onClick={() => setSearch('')}
+                        onClick={() => { setSearch(''); setTingkatFilter(''); setJurusanFilter(''); setStatusFilter(''); }}
                         className="h-9 px-3 rounded-lg border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#6B7280] text-sm flex items-center gap-1.5 transition-colors"
                     >
                         <RotateCcw size={14} />
@@ -273,15 +354,22 @@ export default function ClassRoomIndex() {
                                 {pagedClasses.map((classRoom) => (
                                     <tr key={classRoom.id} className="hover:bg-[#F5F7FA]/60 transition-colors">
                                         <td className="py-2.5 px-4 font-semibold" style={{ color: NAVY }}>{classRoom.name}</td>
-                                        <td className="py-2.5 px-4 text-[#9CA3AF]" title="Data belum tersedia">–</td>
-                                        <td className="py-2.5 px-4 text-[#9CA3AF]" title="Data belum tersedia">–</td>
-                                        <td className="py-2.5 px-4 text-[#9CA3AF]" title="Data belum tersedia">–</td>
+                                        <td className="py-2.5 px-4 text-[#1F2937]">{classRoom.tingkat || '-'}</td>
+                                        <td className="py-2.5 px-4 text-[#1F2937]">{classRoom.jurusan || '-'}</td>
+                                        <td className="py-2.5 px-4 text-[#1F2937]">{classRoom.wali_kelas || '-'}</td>
                                         <td className="py-2.5 px-4 text-[#1F2937] font-medium">{classRoom.total_siswa} Siswa</td>
                                         <td className="py-2.5 px-4 text-center">
-                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                                Aktif
-                                            </span>
+                                            {classRoom.status === 'aktif' || !classRoom.status ? (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                                    Aktif
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 border border-gray-200">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-gray-500" />
+                                                    {classRoom.status}
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="py-2.5 px-4">
                                             <div className="flex items-center justify-center gap-1">
@@ -368,15 +456,63 @@ export default function ClassRoomIndex() {
                         />
                         {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name[0]}</p>}
                     </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label className="block text-sm font-medium text-[#1F2937] mb-1.5">Tingkat</label>
+                            <input
+                                type="text"
+                                value={form.tingkat}
+                                onChange={(e) => setForm({ ...form, tingkat: e.target.value })}
+                                placeholder="Contoh: X, XI, XII"
+                                className="w-full h-9 px-3 text-sm border border-[#E5E7EB] rounded-lg text-[#1F2937] focus:outline-none focus:ring-1"
+                            />
+                            {errors.tingkat && <p className="text-xs text-red-600 mt-1">{errors.tingkat[0]}</p>}
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-[#1F2937] mb-1.5">Jurusan</label>
+                            <input
+                                type="text"
+                                value={form.jurusan}
+                                onChange={(e) => setForm({ ...form, jurusan: e.target.value })}
+                                placeholder="Contoh: PPLG"
+                                className="w-full h-9 px-3 text-sm border border-[#E5E7EB] rounded-lg text-[#1F2937] focus:outline-none focus:ring-1"
+                            />
+                            {errors.jurusan && <p className="text-xs text-red-600 mt-1">{errors.jurusan[0]}</p>}
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-[#1F2937] mb-1.5">Wali Kelas</label>
+                            <input
+                                type="text"
+                                value={form.wali_kelas}
+                                onChange={(e) => setForm({ ...form, wali_kelas: e.target.value })}
+                                placeholder="Contoh: Pak Ahmad"
+                                className="w-full h-9 px-3 text-sm border border-[#E5E7EB] rounded-lg text-[#1F2937] focus:outline-none focus:ring-1"
+                            />
+                            {errors.wali_kelas && <p className="text-xs text-red-600 mt-1">{errors.wali_kelas[0]}</p>}
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-[#1F2937] mb-1.5">Status</label>
+                            <select
+                                value={form.status}
+                                onChange={(e) => setForm({ ...form, status: e.target.value })}
+                                className="w-full h-9 px-3 text-sm border border-[#E5E7EB] rounded-lg text-[#1F2937] focus:outline-none focus:ring-1"
+                            >
+                                <option value="aktif">Aktif</option>
+                                <option value="nonaktif">Nonaktif</option>
+                            </select>
+                            {errors.status && <p className="text-xs text-red-600 mt-1">{errors.status[0]}</p>}
+                        </div>
+                    </div>
 
                     <button
                         type="submit"
-                        className="w-full text-white py-2 rounded-lg text-sm font-medium transition-colors"
+                        disabled={submitting}
+                        className="w-full text-white py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
                         style={{ background: NAVY }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = NAVY_HOVER)}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = NAVY)}
+                        onMouseEnter={(e) => !submitting && (e.currentTarget.style.background = NAVY_HOVER)}
+                        onMouseLeave={(e) => !submitting && (e.currentTarget.style.background = NAVY)}
                     >
-                        Simpan
+                        {submitting ? 'Menyimpan...' : 'Simpan'}
                     </button>
                 </form>
             </Modal>
@@ -396,8 +532,14 @@ export default function ClassRoomIndex() {
                                 <div className="flex items-center gap-2">
                                     <span className="text-lg font-bold" style={{ color: NAVY }}>{detailTarget.name}</span>
                                     <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-semibold">
-                                        Aktif
+                                        {detailTarget.status || 'Aktif'}
                                     </span>
+                                </div>
+                                <div className="mt-1 text-xs text-[#6B7280] space-y-0.5">
+                                    {detailTarget.tingkat && <p>Tingkat: <strong className="text-[#1F2937]">{detailTarget.tingkat}</strong></p>}
+                                    {detailTarget.jurusan && <p>Jurusan: <strong className="text-[#1F2937]">{detailTarget.jurusan}</strong></p>}
+                                    {detailTarget.wali_kelas && <p>Wali Kelas: <strong className="text-[#1F2937]">{detailTarget.wali_kelas}</strong></p>}
+                                    {detailTarget.status && <p>Status: <strong className="text-[#1F2937]">{detailTarget.status}</strong></p>}
                                 </div>
                             </div>
                             <div className="text-right">
@@ -405,9 +547,6 @@ export default function ClassRoomIndex() {
                                 <span className="block text-[10px] text-[#6B7280] uppercase">Siswa Terdaftar</span>
                             </div>
                         </div>
-                        <p className="text-xs text-[#9CA3AF] mt-3">
-                            Detail tambahan (tingkat, jurusan, wali kelas, daftar siswa) belum tersedia — menunggu data & endpoint terkait.
-                        </p>
                         <div className="flex justify-end pt-4">
                             <button
                                 onClick={() => setDetailTarget(null)}

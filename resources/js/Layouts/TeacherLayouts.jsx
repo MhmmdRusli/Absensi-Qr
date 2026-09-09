@@ -93,6 +93,27 @@ export default function TeacherLayouts() {
 
     return (
         <div className="min-h-screen bg-[#F5F7FA] text-[#1F2937]" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <style>{`
+                @media print {
+                    aside, header, .fixed.inset-0.bg-black\\/40 {
+                        display: none !important;
+                    }
+                    main > *:not(#print-rekap) {
+                        display: none !important;
+                    }
+                    main, div.lg\\:ml-64 {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        max-width: 100% !important;
+                    }
+                    body, html {
+                        background: #fff !important;
+                    }
+                    #print-rekap {
+                        display: block !important;
+                    }
+                }
+            `}</style>
             {sidebarOpen && (
                 <div
                     className="fixed inset-0 bg-black/40 z-30 lg:hidden"

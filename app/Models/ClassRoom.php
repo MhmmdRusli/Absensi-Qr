@@ -13,6 +13,10 @@ class ClassRoom extends Model
 
     protected $fillable = [
         'name',
+        'tingkat',
+        'jurusan',
+        'wali_kelas',
+        'status',
     ];
 
     public function students()
