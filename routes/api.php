@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\Student\AttendanceHistoryController;
 use App\Http\Controllers\Api\Student\DashboardController as StudentDashboardController;
 use App\Http\Controllers\Api\Teacher\AttendanceSessionController;
 use App\Http\Controllers\Api\Teacher\DashboardController as TeacherDashboardController;
+use App\Http\Controllers\Api\Teacher\ScheduleController;
+use App\Http\Controllers\Api\Teacher\StudentController as TeacherStudentController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +38,11 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::middleware('role:teacher')->prefix('teacher')->group(function () {
+        Route::get('/reports', [\App\Http\Controllers\Api\Teacher\ReportController::class, 'index']);
+        Route::get('/students', [TeacherStudentController::class, 'index']);
+        Route::get('/schedules', [ScheduleController::class, 'index']);
+        Route::post('/schedules', [ScheduleController::class, 'store']);
+        Route::delete('/schedules/{schedule}', [ScheduleController::class, 'destroy']);
         Route::post('/sessions/{attendanceSession}/close', [AttendanceSessionController::class, 'close']);
         Route::get('/dashboard', [TeacherDashboardController::class, 'index']);
         Route::apiResource('sessions', AttendanceSessionController::class)

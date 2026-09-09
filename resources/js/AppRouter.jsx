@@ -21,6 +21,10 @@ import ReportIndex from './Pages/Admin/Report/Index';
 import SessionCreate from './Pages/Teacher/Session/Create';
 import SessionShow from './Pages/Teacher/Session/Show';
 import SessionIndex from './Pages/Teacher/Session/Index';
+import TeacherHistory from './Pages/Teacher/History/Index';
+import TeacherStudentsIndex from './Pages/Teacher/Students/Index';
+import TeacherScheduleIndex from './Pages/Teacher/Schedule/Index';
+import TeacherReportsIndex from './Pages/Teacher/Reports/Index';
 
 import Scan from './Pages/Student/Scan';
 import History from './Pages/Student/History';
@@ -31,53 +35,143 @@ export default function AppRouter() {
             <AuthProvider>
                 <Routes>
                     {/* LOGIN */}
-                    <Route path="/" element={<Navigate to="/login" replace />} />
-                    <Route path="/login" element={<Login />} />
+                    <Route
+                        path="/"
+                        element={
+                            <Navigate
+                                to="/login"
+                                replace
+                            />
+                        }
+                    />
+
+                    <Route
+                        path="/login"
+                        element={<Login />}
+                    />
 
                     {/* ==================== ADMIN ==================== */}
+
                     <Route
                         path="/admin"
                         element={
-                            <ProtectedRoute allowedRoles={['admin']}>
+                            <ProtectedRoute
+                                allowedRoles={['admin']}
+                            >
                                 <AdminLayout />
                             </ProtectedRoute>
                         }
                     >
-                        <Route path="dashboard" element={<AdminDashboard />} />
-                        <Route path="students" element={<StudentIndex />} />
-                        <Route path="teachers" element={<TeacherIndex />} />
-                        <Route path="classes" element={<ClassRoomIndex />} />
-                        <Route path="subjects" element={<SubjectIndex />} />
-                        <Route path="reports" element={<ReportIndex />} />
+                        <Route
+                            path="dashboard"
+                            element={<AdminDashboard />}
+                        />
+
+                        <Route
+                            path="students"
+                            element={<StudentIndex />}
+                        />
+
+                        <Route
+                            path="teachers"
+                            element={<TeacherIndex />}
+                        />
+
+                        <Route
+                            path="classes"
+                            element={<ClassRoomIndex />}
+                        />
+
+                        <Route
+                            path="subjects"
+                            element={<SubjectIndex />}
+                        />
+
+                        <Route
+                            path="reports"
+                            element={<ReportIndex />}
+                        />
                     </Route>
 
                     {/* ==================== TEACHER ==================== */}
+
                     <Route
                         path="/teacher"
                         element={
-                            <ProtectedRoute allowedRoles={['teacher']}>
+                            <ProtectedRoute
+                                allowedRoles={['teacher']}
+                            >
                                 <TeacherLayout />
                             </ProtectedRoute>
                         }
                     >
-                        <Route path="dashboard" element={<TeacherDashboard />} />
-                        <Route path="sessions/create" element={<SessionCreate />} />
-                        <Route path="sessions/:id" element={<SessionShow />} />
-                        <Route path="sessions" element={<SessionIndex />} />
+                        <Route
+                            path="dashboard"
+                            element={<TeacherDashboard />}
+                        />
+
+                        <Route
+                            path="sessions/create"
+                            element={<SessionCreate />}
+                        />
+
+                        <Route
+                            path="sessions/:id"
+                            element={<SessionShow />}
+                        />
+
+                        <Route
+                            path="sessions"
+                            element={<SessionIndex />}
+                        />
+
+                        <Route
+                            path="history"
+                            element={<TeacherHistory />}
+                        />
+
+                        <Route
+                            path="students"
+                            element={<TeacherStudentsIndex />}
+                        />
+
+                        <Route
+                            path="schedule"
+                            element={<TeacherScheduleIndex />}
+                        />
+
+                        <Route
+                            path="reports"
+                            element={<TeacherReportsIndex />}
+                        />
                     </Route>
 
                     {/* ==================== STUDENT ==================== */}
+
                     <Route
                         path="/student"
                         element={
-                            <ProtectedRoute allowedRoles={['student']}>
+                            <ProtectedRoute
+                                allowedRoles={['student']}
+                            >
                                 <StudentLayout />
                             </ProtectedRoute>
                         }
                     >
-                        <Route path="dashboard" element={<StudentDashboard />} />
-                        <Route path="scan" element={<Scan />} />
-                        <Route path="history" element={<History />} />
+                        <Route
+                            path="dashboard"
+                            element={<StudentDashboard />}
+                        />
+
+                        <Route
+                            path="scan"
+                            element={<Scan />}
+                        />
+
+                        <Route
+                            path="history"
+                            element={<History />}
+                        />
                     </Route>
                 </Routes>
             </AuthProvider>
