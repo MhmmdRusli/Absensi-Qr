@@ -26,9 +26,12 @@ const SCANNER_ELEMENT_ID = 'qr-reader';
 
 export default function Scan() {
     const scannerRef = useRef(null);
-    const [status, setStatus] = useState('scanning'); // scanning | loading | success | error
+    const [status, setStatus] = useState('scanning');
     const [result, setResult] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
+    const [cameraFacing, setCameraFacing] = useState('environment');
+    const [flashOn, setFlashOn] = useState(false);
+    const [zoomLevel, setZoomLevel] = useState(1);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -48,13 +51,12 @@ export default function Scan() {
             try {
                 await scanner.stop();
             } catch (err) {
-                // Kamera memang sudah berhenti/belum sempat jalan, aman diabaikan.
             }
         };
 
         scanner
             .start(
-                { facingMode: 'environment' },
+                { facingMode: cameraFacing },
                 { fps: 10, qrbox: { width: 250, height: 250 } },
                 (decodedText) => {
                     safeStop().then(() => submitScan(decodedText));
@@ -69,7 +71,7 @@ export default function Scan() {
         return () => {
             safeStop();
         };
-    }, [status]);
+    }, [status, cameraFacing]);
 
     const submitScan = async (token) => {
         setStatus('loading');
@@ -88,6 +90,40 @@ export default function Scan() {
         setResult(null);
         setErrorMessage('');
         setStatus('scanning');
+    };
+
+    const handleSwitchCamera = async () => {
+        setCameraFacing((prev) => (prev === 'environment' ? 'user' : 'environment'));
+    };
+
+    const handleToggleFlash = async () => {
+        try {
+            const video = document.getElementById(SCANNER_ELEMENT_ID);
+            if (!video || !video.srcObject) return;
+            const tracks = video.srcObject.getVideoTracks();
+            if (tracks.length === 0) return;
+            const track = tracks[0];
+            const newFlash = !flashOn;
+            await track.applyConstraints({ advanced: [{ torch: newFlash }] });
+            setFlashOn(newFlash);
+        } catch {
+        }
+    };
+
+    const handleZoom = async (direction) => {
+        try {
+            const video = document.getElementById(SCANNER_ELEMENT_ID);
+            if (!video || !video.srcObject) return;
+            const tracks = video.srcObject.getVideoTracks();
+            if (tracks.length === 0) return;
+            const track = tracks[0];
+            const newZoom = direction === 'in'
+                ? Math.min((zoomLevel || 1) + 0.5, 3)
+                : Math.max((zoomLevel || 1) - 0.5, 1);
+            await track.applyConstraints({ advanced: [{ zoom: newZoom }] });
+            setZoomLevel(newZoom);
+        } catch {
+        }
     };
 
     const isCameraPermissionError =
@@ -159,23 +195,23 @@ export default function Scan() {
                                         </div>
                                         <div className="flex items-center gap-1 bg-black/60 rounded p-1 pointer-events-auto">
                                             <button
-                                                disabled
-                                                title="Fitur belum tersedia"
-                                                className="p-1.5 text-white/50 rounded cursor-not-allowed"
+                                                onClick={handleSwitchCamera}
+                                                title="Ganti Kamera"
+                                                className={`p-1.5 rounded cursor-pointer transition-colors ${flashOn ? 'bg-blue-500/30 text-blue-300' : 'text-white/80 hover:bg-white/10'}`}
                                             >
                                                 <SwitchCamera size={16} />
                                             </button>
                                             <button
-                                                disabled
-                                                title="Fitur belum tersedia"
-                                                className="p-1.5 text-white/50 rounded cursor-not-allowed"
+                                                onClick={handleToggleFlash}
+                                                title="Flash"
+                                                className={`p-1.5 rounded cursor-pointer transition-colors ${flashOn ? 'bg-yellow-500/30 text-yellow-300' : 'text-white/80 hover:bg-white/10'}`}
                                             >
                                                 <Zap size={16} />
                                             </button>
                                             <button
-                                                disabled
-                                                title="Fitur belum tersedia"
-                                                className="p-1.5 text-white/50 rounded cursor-not-allowed"
+                                                onClick={() => handleZoom('in')}
+                                                title="Perbesar"
+                                                className="p-1.5 text-white/80 hover:bg-white/10 rounded cursor-pointer"
                                             >
                                                 <Maximize size={16} />
                                             </button>
@@ -187,7 +223,7 @@ export default function Scan() {
                                         <div className="absolute top-0 right-0 w-7 h-7 border-t-4 border-r-4 border-white rounded-tr" />
                                         <div className="absolute bottom-0 left-0 w-7 h-7 border-b-4 border-l-4 border-white rounded-bl" />
                                         <div className="absolute bottom-0 right-0 w-7 h-7 border-b-4 border-r-4 border-white rounded-br" />
-                                        <div className="absolute left-1 right-1 top-1/2 h-0.5 bg-blue-400 shadow-[0_0_10px_#60a5fa] animate-pulse" />
+                                        <div className="absolute left-1 right-1 h-0.5 bg-blue-400 shadow-[0_0_10px_#60a5fa]" style={{ animation: 'scanMove 2s ease-in-out infinite' }} />
                                         <div className="absolute -bottom-6 inset-x-0 text-center">
                                             <span className="px-2 py-0.5 bg-black/70 text-white/90 rounded text-[10px]">
                                                 Arahkan tepat ke QR guru

@@ -297,14 +297,30 @@ export default function ClassRoomIndex() {
                         <RotateCcw size={14} />
                         <span>Reset</span>
                     </button>
-                    <button
-                        disabled
-                        title="Belum tersedia"
-                        className="h-9 px-3 rounded-lg border border-[#E5E7EB] bg-[#F5F7FA] text-[#9CA3AF] text-sm flex items-center gap-1.5 cursor-not-allowed"
-                    >
-                        <Download size={14} />
-                        <span>Export</span>
-                    </button>
+                        <button
+                            onClick={async () => {
+                                try {
+                                    const response = await api.get('/admin/classes/export', {
+                                        responseType: 'blob',
+                                    });
+                                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                                    const link = document.createElement('a');
+                                    link.href = url;
+                                    link.setAttribute('download', 'data-kelas.csv');
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    link.remove();
+                                    window.URL.revokeObjectURL(url);
+                                    setNotice('Data kelas berhasil diekspor.');
+                                } catch (err) {
+                                    setNotice('Gagal mengekspor data kelas.');
+                                }
+                            }}
+                            className="h-9 px-3 rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#F5F7FA] text-[#6B7280] text-sm flex items-center gap-1.5 transition-colors"
+                        >
+                            <Download size={14} />
+                            <span>Export</span>
+                        </button>
                 </div>
             </div>
 

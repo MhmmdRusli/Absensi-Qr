@@ -189,9 +189,11 @@ export default function History() {
                 </div>
                 <div className="flex items-center gap-2.5">
                     <button
-                        disabled
-                        title="Fitur belum tersedia"
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] text-[#9CA3AF] text-xs font-semibold rounded-lg cursor-not-allowed"
+                        onClick={() => {
+                            const params = new URLSearchParams(appliedFilters).toString();
+                            window.location.href = `/api/student/attendance/export?${params}`;
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] text-xs font-semibold rounded-lg transition-colors"
                     >
                         <Download size={16} />
                         <span>Unduh Rekap (PDF/Excel)</span>

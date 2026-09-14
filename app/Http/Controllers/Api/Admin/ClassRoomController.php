@@ -100,4 +100,42 @@ class ClassRoomController extends Controller
             'data' => ClassRoom::select('id', 'name', 'tingkat', 'jurusan', 'wali_kelas', 'status')->orderBy('name')->get(),
         ]);
     }
+
+    public function export()
+    {
+        $classes = ClassRoom::withCount('students')
+            ->orderBy('name')
+            ->get()
+            ->map(fn ($c) => [
+                'nama_kelas' => $c->name,
+                'tingkat' => $c->tingkat,
+                'jurusan' => $c->jurusan,
+                'wali_kelas' => $c->wali_kelas,
+                'status' => $c->status,
+                'total_siswa' => $c->students_count,
+            ]);
+
+        $filename = 'data-kelas-' . now()->format('Y-m-d-His') . '.csv';
+
+        return response()->streamDownload(function () use ($classes) {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, ['Nama Kelas', 'Tingkat', 'Jurusan', 'Wali Kelas', 'Status', 'Total Siswa']);
+
+            foreach ($classes as $c) {
+                fputcsv($handle, [
+                    $c['nama_kelas'],
+                    $c['tingkat'],
+                    $c['jurusan'],
+                    $c['wali_kelas'],
+                    $c['status'],
+                    $c['total_siswa'],
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv',
+        ]);
+    }
 }

@@ -47,6 +47,13 @@ export default function StudentDashboard() {
     const [riwayat, setRiwayat] = useState([]);
     const [loading, setLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState(null);
+    const [permModalOpen, setPermModalOpen] = useState(false);
+    const [permMode, setPermMode] = useState('ajukan');
+    const [permissions, setPermissions] = useState([]);
+    const [permDate, setPermDate] = useState('');
+    const [permType, setPermType] = useState('izin');
+    const [permReason, setPermReason] = useState('');
+    const [permSubmitting, setPermSubmitting] = useState(false);
 
     const navigate = useNavigate();
 
@@ -112,6 +119,49 @@ export default function StudentDashboard() {
             predikatColor = 'text-red-700';
         }
     }
+
+    const openPermModal = (mode) => {
+        setPermMode(mode);
+        setPermDate('');
+        setPermType('izin');
+        setPermReason('');
+        if (mode === 'form') {
+            api.get('/student/permissions').then((res) => {
+                setPermissions(res.data.data || []);
+            });
+        }
+        setPermModalOpen(true);
+    };
+
+    const handlePermSubmit = async () => {
+        if (!permDate) return;
+        setPermSubmitting(true);
+        try {
+            await api.post('/student/permissions', {
+                date: permDate,
+                type: permType,
+                reason: permReason,
+            });
+            setPermModalOpen(false);
+            alert('Permintaan izin berhasil diajukan.');
+        } catch {
+            alert('Gagal mengajukan permintaan.');
+        } finally {
+            setPermSubmitting(false);
+        }
+    };
+
+    const statusBadge = (s) => {
+        if (s === 'approved') return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        if (s === 'rejected') return 'bg-rose-50 text-rose-700 border-rose-200';
+        return 'bg-amber-50 text-amber-700 border-amber-200';
+    };
+
+    const statusLabel = (s) => {
+        if (s === 'approved') return 'Disetujui';
+        if (s === 'rejected') return 'Ditolak';
+        return 'Menunggu';
+    };
 
     return (
         <div className="space-y-5">
@@ -198,9 +248,8 @@ export default function StudentDashboard() {
                         </button>
 
                         <button
-                            disabled
-                            title="Fitur belum tersedia"
-                            className="flex-1 md:flex-none h-9 px-4 bg-white text-[#9CA3AF] border border-[#E5E7EB] text-[12px] font-semibold rounded-lg flex items-center justify-center gap-1.5 cursor-not-allowed"
+                            onClick={() => openPermModal('ajukan')}
+                            className="flex-1 md:flex-none h-9 px-4 bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] text-[12px] font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors"
                         >
                             <FilePlus size={16} />
                             <span>Ajukan Izin / Sakit</span>
@@ -735,16 +784,15 @@ export default function StudentDashboard() {
                             </button>
 
                             <button
-                                disabled
-                                title="Fitur belum tersedia"
-                                className="p-2.5 border border-[#E5E7EB] rounded-lg flex flex-col items-center justify-center text-center opacity-50 cursor-not-allowed"
+                                onClick={() => openPermModal('form')}
+                                className="p-2.5 border border-[#E5E7EB] rounded-lg flex flex-col items-center justify-center text-center hover:border-[#1E3A5F] hover:bg-[#F5F7FA] transition-colors"
                             >
                                 <FileDown
                                     size={20}
-                                    className="text-[#6B7280]"
+                                    className="text-[#1E3A5F]"
                                 />
 
-                                <span className="text-[11px] text-[#6B7280] mt-1">
+                                <span className="text-[11px] text-[#1F2937] mt-1">
                                     Form Izin
                                 </span>
                             </button>
@@ -900,6 +948,97 @@ export default function StudentDashboard() {
                 </p>
 
             </footer>
+
+            {/* MODAL AJUKAN IZIN */}
+            {permModalOpen && permMode === 'ajukan' && (
+                <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={() => setPermModalOpen(false)}>
+                    <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-2xl max-w-md w-full p-5" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3 mb-4">
+                            <h3 className="text-base font-semibold text-[#1F2937]">Ajukan Izin / Sakit</h3>
+                            <button onClick={() => setPermModalOpen(false)} className="text-[#9CA3AF] hover:text-[#1F2937]"><span className="text-xl">&times;</span></button>
+                        </div>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-xs text-[#6B7280] mb-1">Tanggal</label>
+                                <input
+                                    type="date"
+                                    value={permDate}
+                                    onChange={(e) => setPermDate(e.target.value)}
+                                    className="w-full h-9 px-3 text-sm border border-[#E5E7EB] rounded-lg text-[#1F2937] focus:outline-none focus:ring-1"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs text-[#6B7280] mb-1">Jenis</label>
+                                <select
+                                    value={permType}
+                                    onChange={(e) => setPermType(e.target.value)}
+                                    className="w-full h-9 px-3 text-sm border border-[#E5E7EB] rounded-lg text-[#1F2937] focus:outline-none"
+                                >
+                                    <option value="izin">Izin</option>
+                                    <option value="sakit">Sakit</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs text-[#6B7280] mb-1">Alasan</label>
+                                <textarea
+                                    value={permReason}
+                                    onChange={(e) => setPermReason(e.target.value)}
+                                    placeholder="Tuliskan alasan (opsional)..."
+                                    rows={3}
+                                    className="w-full h-auto px-3 py-2 text-sm border border-[#E5E7EB] rounded-lg text-[#1F2937] focus:outline-none focus:ring-1 resize-none"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex justify-end gap-2 pt-4 border-t border-[#E5E7EB]">
+                            <button onClick={() => setPermModalOpen(false)} className="h-9 px-4 rounded-lg border border-[#E5E7EB] text-[#1F2937] hover:bg-[#F5F7FA] text-sm">
+                                Batal
+                            </button>
+                            <button
+                                onClick={handlePermSubmit}
+                                disabled={permSubmitting || !permDate}
+                                className="h-9 px-4 rounded-lg text-white text-sm flex items-center gap-2"
+                                style={{ background: '#1E3A5F' }}
+                            >
+                                {permSubmitting ? 'Memproses...' : 'Ajukan'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL DAFTAR IZIN */}
+            {permModalOpen && permMode === 'form' && (
+                <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={() => setPermModalOpen(false)}>
+                    <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-2xl max-w-md w-full p-5" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3 mb-4">
+                            <h3 className="text-base font-semibold text-[#1F2937]">Daftar Permintaan Izin</h3>
+                            <button onClick={() => setPermModalOpen(false)} className="text-[#9CA3AF] hover:text-[#1F2937]"><span className="text-xl">&times;</span></button>
+                        </div>
+                        {permissions.length === 0 ? (
+                            <p className="text-sm text-[#9CA3AF] text-center py-6">Belum ada permintaan izin.</p>
+                        ) : (
+                            <div className="space-y-2 max-h-64 overflow-y-auto">
+                                {permissions.map((p) => (
+                                    <div key={p.id} className="flex items-center justify-between p-3 rounded-lg border border-[#E5E7EB] text-sm">
+                                        <div>
+                                            <p className="font-medium text-[#1F2937]">{p.tanggal}</p>
+                                            <p className="text-xs text-[#6B7280]">{p.jenis === 'izin' ? 'Izin' : 'Sakit'}{p.alasan && p.alasan !== '-' ? ` — ${p.alasan}` : ''}</p>
+                                        </div>
+                                        <span className={`px-2 py-0.5 rounded text-[11px] font-semibold border capitalize ${statusBadge(p.status)}`}>
+                                            {statusLabel(p.status)}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <div className="flex justify-end pt-4 border-t border-[#E5E7EB] mt-4">
+                            <button onClick={() => setPermModalOpen(false)} className="h-9 px-4 rounded-lg border border-[#E5E7EB] text-[#1F2937] hover:bg-[#F5F7FA] text-sm">
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
         </div>
     );

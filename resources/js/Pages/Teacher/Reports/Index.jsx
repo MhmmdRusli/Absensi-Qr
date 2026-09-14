@@ -83,11 +83,6 @@ export default function TeacherReportsIndex() {
         }
     };
 
-    const handleExportCsv = () => {
-        const params = new URLSearchParams(filters).toString();
-        window.location.href = `/api/admin/reports/export?${params}`;
-    };
-
     useEffect(() => {
         fetchOptions();
     }, []);
@@ -162,19 +157,17 @@ export default function TeacherReportsIndex() {
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                     <button
-                        disabled
-                        title="Belum tersedia — backend hanya menyediakan export CSV"
-                        className="h-9 px-3 border border-[#E5E7EB] bg-[#F5F7FA] text-[#9CA3AF] rounded-lg text-sm flex items-center gap-1.5 cursor-not-allowed"
+                        onClick={() => { const p = new URLSearchParams(filters).toString(); window.location.href = `/api/teacher/reports/export/pdf?${p}`; }}
+                        className="h-9 px-3 border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] rounded-lg text-sm flex items-center gap-1.5 transition-colors"
                     >
-                        <FileText size={16} className="text-red-400" />
+                        <FileText size={16} className="text-red-500" />
                         <span>PDF</span>
                     </button>
                     <button
-                        disabled
-                        title="Belum tersedia — backend hanya menyediakan export CSV"
-                        className="h-9 px-3 border border-[#E5E7EB] bg-[#F5F7FA] text-[#9CA3AF] rounded-lg text-sm flex items-center gap-1.5 cursor-not-allowed"
+                        onClick={() => { const p = new URLSearchParams(filters).toString(); window.location.href = `/api/teacher/reports/export/excel?${p}`; }}
+                        className="h-9 px-3 border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] rounded-lg text-sm flex items-center gap-1.5 transition-colors"
                     >
-                        <FileSpreadsheet size={16} className="text-emerald-400" />
+                        <FileSpreadsheet size={16} className="text-emerald-500" />
                         <span>Excel</span>
                     </button>
                     <button
@@ -599,22 +592,19 @@ export default function TeacherReportsIndex() {
                         <label className="block text-sm font-medium text-[#1F2937] mb-1.5">Pilih Format Berkas</label>
                         <div className="grid grid-cols-3 gap-2 mb-4">
                             {[
-                                ['pdf', 'PDF', true],
-                                ['excel', 'Excel', true],
+                                ['pdf', 'PDF', false],
+                                ['excel', 'Excel', false],
                                 ['csv', 'CSV', false],
                             ].map(([val, label, disabled]) => (
                                 <label
                                     key={val}
-                                    title={disabled ? 'Belum tersedia' : undefined}
                                     className={`flex items-center gap-2 p-2 rounded border cursor-pointer ${
-                                        disabled ? 'opacity-40 cursor-not-allowed border-[#E5E7EB]' :
                                         exportFormat === val ? 'border-2' : 'border-[#E5E7EB]'
                                     }`}
-                                    style={!disabled && exportFormat === val ? { borderColor: NAVY, background: '#EFF4FF' } : undefined}
+                                    style={exportFormat === val ? { borderColor: NAVY, background: '#EFF4FF' } : undefined}
                                 >
                                     <input
                                         type="radio"
-                                        disabled={disabled}
                                         checked={exportFormat === val}
                                         onChange={() => setExportFormat(val)}
                                     />
@@ -627,7 +617,17 @@ export default function TeacherReportsIndex() {
                                 Batal
                             </button>
                             <button
-                                onClick={() => { handleExportCsv(); setExportModalOpen(false); }}
+                                onClick={() => {
+                                    const params = new URLSearchParams(filters).toString();
+                                    if (exportFormat === 'pdf') {
+                                        window.location.href = `/api/teacher/reports/export/pdf?${params}`;
+                                    } else if (exportFormat === 'excel') {
+                                        window.location.href = `/api/teacher/reports/export/excel?${params}`;
+                                    } else {
+                                        window.location.href = `/api/teacher/reports/export?${params}`;
+                                    }
+                                    setExportModalOpen(false);
+                                }}
                                 className="h-9 px-4 rounded-lg text-white text-sm flex items-center gap-2"
                                 style={{ background: NAVY }}
                             >

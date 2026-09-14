@@ -7,10 +7,9 @@ import {
     Inbox, TriangleAlert, ChevronDown,
 } from 'lucide-react';
 
-const emptyForm = { name: '', email: '', nis: '', class_id: '' };
+const emptyForm = { name: '', email: '', gender: '', nis: '', class_id: '', status: 'aktif' };
 const PAGE_SIZE = 10;
 
-// Palet warna project (sesuai design system Dashboard Admin)
 const NAVY = '#1E3A5F';
 const NAVY_HOVER = '#16304F';
 
@@ -23,24 +22,34 @@ export default function StudentIndex() {
     const [form, setForm] = useState(emptyForm);
     const [errors, setErrors] = useState({});
     const [notice, setNotice] = useState('');
+    const [submitting, setSubmitting] = useState(false);
 
-    // Search & filter (client-side, data asli — tidak butuh API baru)
     const [search, setSearch] = useState('');
     const [classFilter, setClassFilter] = useState('');
+    const [genderFilter, setGenderFilter] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
     const [page, setPage] = useState(1);
 
-    // Konfirmasi hapus (custom modal, menggantikan window.confirm)
     const [deleteTarget, setDeleteTarget] = useState(null);
 
     const fetchStudents = async () => {
-        const response = await api.get('/admin/students');
-        setStudents(response.data.data);
-        setLoading(false);
+        try {
+            const response = await api.get('/admin/students');
+            setStudents(response.data.data);
+        } catch (err) {
+            setNotice('Gagal memuat data siswa.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const fetchClasses = async () => {
-        const response = await api.get('/classes-list');
-        setClasses(response.data.data);
+        try {
+            const response = await api.get('/classes-list');
+            setClasses(response.data.data);
+        } catch (err) {
+            setNotice('Gagal memuat data kelas.');
+        }
     };
 
     useEffect(() => {
@@ -48,10 +57,18 @@ export default function StudentIndex() {
         fetchClasses();
     }, []);
 
+    useEffect(() => {
+        if (notice) {
+            const timer = setTimeout(() => setNotice(''), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [notice]);
+
     const openCreateModal = () => {
         setEditingId(null);
         setForm(emptyForm);
         setErrors({});
+        setNotice('');
         setIsModalOpen(true);
     };
 
@@ -60,70 +77,95 @@ export default function StudentIndex() {
         setForm({
             name: student.name,
             email: student.email,
+            gender: student.gender || '',
             nis: student.nis,
             class_id: student.class_id,
+            status: student.status || 'aktif',
         });
         setErrors({});
+        setNotice('');
         setIsModalOpen(true);
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setErrors({});
+        setNotice('');
+        setSubmitting(true);
 
         try {
+            let response;
             if (editingId) {
-                const response = await api.put(`/admin/students/${editingId}`, form);
-                setNotice(response.data.message);
+                response = await api.put(`/admin/students/${editingId}`, form);
             } else {
-                const response = await api.post('/admin/students', form);
-                setNotice(response.data.message);
+                response = await api.post('/admin/students', form);
             }
-
+            setNotice(response.data.message);
             setIsModalOpen(false);
             fetchStudents();
         } catch (err) {
             if (err.response?.status === 422) {
-                setErrors(err.response.data.errors);
+                setErrors(err.response.data.errors ?? {});
+            } else {
+                const message = err.response?.data?.message || err.message || 'Terjadi kesalahan.';
+                setNotice(message);
             }
+        } finally {
+            setSubmitting(false);
         }
     };
 
     const confirmDelete = async () => {
         if (!deleteTarget) return;
-        await api.delete(`/admin/students/${deleteTarget.id}`);
-        setNotice('Siswa berhasil dihapus.');
+        try {
+            await api.delete(`/admin/students/${deleteTarget.id}`);
+            setNotice('Siswa berhasil dihapus.');
+            fetchStudents();
+        } catch (err) {
+            setNotice(err.response?.data?.message || 'Gagal menghapus siswa.');
+        }
         setDeleteTarget(null);
-        fetchStudents();
     };
 
-    // Filter data asli (search + kelas)
     const filteredStudents = useMemo(() => {
         return students.filter((s) => {
             const q = search.trim().toLowerCase();
             const matchSearch =
-                !q || s.name.toLowerCase().includes(q) || s.nis.toLowerCase().includes(q);
+                !q || s.name.toLowerCase().includes(q) || String(s.nis).toLowerCase().includes(q);
             const matchClass = !classFilter || String(s.class_id) === String(classFilter);
-            return matchSearch && matchClass;
+            const matchGender = !genderFilter || s.gender === genderFilter;
+            const matchStatus = !statusFilter || s.status === statusFilter;
+            return matchSearch && matchClass && matchGender && matchStatus;
         });
-    }, [students, search, classFilter]);
+    }, [students, search, classFilter, genderFilter, statusFilter]);
 
     const totalPages = Math.max(1, Math.ceil(filteredStudents.length / PAGE_SIZE));
     const pagedStudents = filteredStudents.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-    useEffect(() => setPage(1), [search, classFilter]);
+    useEffect(() => setPage(1), [search, classFilter, genderFilter, statusFilter]);
 
     const resetFilters = () => {
         setSearch('');
         setClassFilter('');
+        setGenderFilter('');
+        setStatusFilter('');
     };
+
+    const genderOptions = useMemo(() => {
+        const values = students.map((s) => s.gender).filter(Boolean);
+        return [...new Set(values)].sort();
+    }, [students]);
+
+    const statusOptions = useMemo(() => {
+        const values = students.map((s) => s.status).filter(Boolean);
+        return [...new Set(values)].sort();
+    }, [students]);
 
     const initials = (name) =>
         name.split(' ').map((s) => s[0]).slice(0, 2).join('').toUpperCase();
 
     return (
         <div className="max-w-7xl mx-auto flex flex-col gap-6">
-            {/* HEADER */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-semibold text-[#1F2937]">Data Siswa</h1>
@@ -149,7 +191,6 @@ export default function StudentIndex() {
                 </div>
             )}
 
-            {/* KPI CARDS */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white border border-[#E5E7EB] rounded-xl p-4 flex items-center justify-between shadow-sm">
                     <div className="flex flex-col">
@@ -165,8 +206,10 @@ export default function StudentIndex() {
                 <div className="bg-white border border-[#E5E7EB] rounded-xl p-4 flex items-center justify-between shadow-sm">
                     <div className="flex flex-col">
                         <span className="text-xs font-semibold text-[#6B7280] uppercase tracking-wide">Siswa Aktif</span>
-                        <span className="text-2xl font-semibold text-[#1F2937] mt-1">–</span>
-                        <span className="text-xs text-[#6B7280] mt-2">Menunggu field status</span>
+                        <span className="text-2xl font-semibold text-[#1F2937] mt-1">
+                            {students.filter((s) => (s.status || 'aktif') === 'aktif').length}
+                        </span>
+                        <span className="text-xs text-[#6B7280] mt-2">Siswa aktif</span>
                     </div>
                     <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-emerald-50 text-emerald-600 border border-emerald-200">
                         <CheckCircle2 size={22} />
@@ -176,8 +219,10 @@ export default function StudentIndex() {
                 <div className="bg-white border border-[#E5E7EB] rounded-xl p-4 flex items-center justify-between shadow-sm">
                     <div className="flex flex-col">
                         <span className="text-xs font-semibold text-[#6B7280] uppercase tracking-wide">Siswa Nonaktif</span>
-                        <span className="text-2xl font-semibold text-[#1F2937] mt-1">–</span>
-                        <span className="text-xs text-[#6B7280] mt-2">Menunggu field status</span>
+                        <span className="text-2xl font-semibold text-[#1F2937] mt-1">
+                            {students.filter((s) => s.status === 'nonaktif').length}
+                        </span>
+                        <span className="text-xs text-[#6B7280] mt-2">Siswa nonaktif</span>
                     </div>
                     <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#F5F7FA] text-[#6B7280] border border-[#E5E7EB]">
                         <XCircle size={22} />
@@ -185,9 +230,7 @@ export default function StudentIndex() {
                 </div>
             </div>
 
-            {/* TABLE CONTAINER */}
             <div className="bg-white border border-[#E5E7EB] rounded-xl shadow-sm overflow-hidden">
-                {/* TOOLBAR */}
                 <div className="p-4 border-b border-[#E5E7EB] flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
                     <div className="relative flex-1 min-w-[260px]">
                         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
@@ -215,16 +258,32 @@ export default function StudentIndex() {
                             <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none" />
                         </div>
 
-                        <div className="relative" title="Belum tersedia — field belum ada di database">
-                            <select disabled className="h-9 pl-3 pr-8 text-sm bg-[#F5F7FA] border border-[#E5E7EB] rounded-lg text-[#9CA3AF] appearance-none cursor-not-allowed">
-                                <option>Semua Gender</option>
+                        <div className="relative">
+                            <select
+                                value={genderFilter}
+                                onChange={(e) => setGenderFilter(e.target.value)}
+                                className="h-9 pl-3 pr-8 text-sm bg-white border border-[#E5E7EB] rounded-lg text-[#1F2937] appearance-none cursor-pointer focus:outline-none"
+                            >
+                                <option value="">Semua Gender</option>
+                                <option value="laki-laki">Laki-laki</option>
+                                <option value="perempuan">Perempuan</option>
+                                {genderOptions.filter((g) => g !== 'laki-laki' && g !== 'perempuan').map((g) => (
+                                    <option key={g} value={g}>{g}</option>
+                                ))}
                             </select>
                             <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none" />
                         </div>
 
-                        <div className="relative" title="Belum tersedia — field belum ada di database">
-                            <select disabled className="h-9 pl-3 pr-8 text-sm bg-[#F5F7FA] border border-[#E5E7EB] rounded-lg text-[#9CA3AF] appearance-none cursor-not-allowed">
-                                <option>Semua Status</option>
+                        <div className="relative">
+                            <select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                className="h-9 pl-3 pr-8 text-sm bg-white border border-[#E5E7EB] rounded-lg text-[#1F2937] appearance-none cursor-pointer focus:outline-none"
+                            >
+                                <option value="">Semua Status</option>
+                                {statusOptions.map((s) => (
+                                    <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+                                ))}
                             </select>
                             <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none" />
                         </div>
@@ -238,9 +297,25 @@ export default function StudentIndex() {
                         </button>
 
                         <button
-                            disabled
-                            title="Belum tersedia"
-                            className="h-9 px-3 rounded-lg border border-[#E5E7EB] bg-[#F5F7FA] text-[#9CA3AF] text-sm flex items-center gap-1.5 cursor-not-allowed"
+                            onClick={async () => {
+                                try {
+                                    const response = await api.get('/admin/students/export', {
+                                        responseType: 'blob',
+                                    });
+                                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                                    const link = document.createElement('a');
+                                    link.href = url;
+                                    link.setAttribute('download', 'data-siswa.csv');
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    link.remove();
+                                    window.URL.revokeObjectURL(url);
+                                    setNotice('Data berhasil diekspor.');
+                                } catch (err) {
+                                    setNotice('Gagal mengekspor data.');
+                                }
+                            }}
+                            className="h-9 px-3 rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#F5F7FA] text-[#6B7280] text-sm flex items-center gap-1.5 transition-colors"
                         >
                             <Download size={14} />
                             <span>Export</span>
@@ -248,7 +323,6 @@ export default function StudentIndex() {
                     </div>
                 </div>
 
-                {/* TABLE */}
                 {loading ? (
                     <div className="p-8 text-center text-[#9CA3AF] text-sm">Memuat data...</div>
                 ) : filteredStudents.length === 0 ? (
@@ -306,13 +380,20 @@ export default function StudentIndex() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="py-2.5 px-4 text-[#9CA3AF]" title="Data belum tersedia">–</td>
+                                        <td className="py-2.5 px-4 text-[#1F2937]">{student.gender || '-'}</td>
                                         <td className="py-2.5 px-4 text-[#1F2937] font-medium">{student.class_name}</td>
                                         <td className="py-2.5 px-4 text-center">
-                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                                Aktif
-                                            </span>
+                                            {student.status === 'nonaktif' ? (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 border border-gray-200">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-gray-500" />
+                                                    Nonaktif
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                                    Aktif
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="py-2.5 px-4 text-right">
                                             <div className="flex items-center justify-end gap-1">
@@ -346,7 +427,6 @@ export default function StudentIndex() {
                     </div>
                 )}
 
-                {/* PAGINATION */}
                 {filteredStudents.length > 0 && (
                     <div className="px-4 py-3 border-t border-[#E5E7EB] flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-[#6B7280]">
                         <span>
@@ -382,7 +462,6 @@ export default function StudentIndex() {
                 )}
             </div>
 
-            {/* MODAL TAMBAH/EDIT */}
             <Modal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
@@ -409,6 +488,34 @@ export default function StudentIndex() {
                             className="w-full h-9 px-3 text-sm border border-[#E5E7EB] rounded-lg text-[#1F2937] focus:outline-none focus:ring-1"
                         />
                         {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email[0]}</p>}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label className="block text-sm font-medium text-[#1F2937] mb-1.5">Jenis Kelamin</label>
+                            <select
+                                value={form.gender}
+                                onChange={(e) => setForm({ ...form, gender: e.target.value })}
+                                className="w-full h-9 px-3 text-sm border border-[#E5E7EB] rounded-lg text-[#1F2937] appearance-none focus:outline-none focus:ring-1"
+                            >
+                                <option value="">Pilih gender</option>
+                                <option value="laki-laki">Laki-laki</option>
+                                <option value="perempuan">Perempuan</option>
+                            </select>
+                            {errors.gender && <p className="text-xs text-red-600 mt-1">{errors.gender[0]}</p>}
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-[#1F2937] mb-1.5">Status</label>
+                            <select
+                                value={form.status}
+                                onChange={(e) => setForm({ ...form, status: e.target.value })}
+                                className="w-full h-9 px-3 text-sm border border-[#E5E7EB] rounded-lg text-[#1F2937] appearance-none focus:outline-none focus:ring-1"
+                            >
+                                <option value="aktif">Aktif</option>
+                                <option value="nonaktif">Nonaktif</option>
+                            </select>
+                            {errors.status && <p className="text-xs text-red-600 mt-1">{errors.status[0]}</p>}
+                        </div>
                     </div>
 
                     <div>
@@ -447,17 +554,17 @@ export default function StudentIndex() {
 
                     <button
                         type="submit"
-                        className="w-full text-white py-2 rounded-lg text-sm font-medium transition-colors"
+                        disabled={submitting}
+                        className="w-full text-white py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
                         style={{ background: NAVY }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = NAVY_HOVER)}
+                        onMouseEnter={(e) => { if (!submitting) e.currentTarget.style.background = NAVY_HOVER; }}
                         onMouseLeave={(e) => (e.currentTarget.style.background = NAVY)}
                     >
-                        Simpan Data
+                        {submitting ? 'Menyimpan...' : 'Simpan Data'}
                     </button>
                 </form>
             </Modal>
 
-            {/* MODAL KONFIRMASI HAPUS (custom, sesuai desain Stitch) */}
             {deleteTarget && (
                 <div className="fixed inset-0 z-50 bg-[#0F172A]/40 backdrop-blur-sm flex items-center justify-center p-4">
                     <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-2xl max-w-sm w-full p-5">

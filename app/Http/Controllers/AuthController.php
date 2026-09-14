@@ -43,8 +43,16 @@ class AuthController extends Controller
 
     public function user(Request $request)
     {
+        $user = $request->user();
+
+        if (! $user) {
+            return response()->json([
+                'user' => null,
+            ]);
+        }
+
         return response()->json([
-            'user' => $this->formatUser($request->user()),
+            'user' => $this->formatUser($user),
         ]);
     }
 
@@ -56,5 +64,31 @@ class AuthController extends Controller
             'email' => $user->email,
             'role' => $user->role,
         ];
+    }
+
+    public function profile(Request $request)
+    {
+        $user = $request->user();
+
+        return response()->json([
+            'user' => $this->formatUser($user),
+        ]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+        ]);
+
+        $user->update($validated);
+
+        return response()->json([
+            'message' => 'Profil berhasil diperbarui',
+            'user' => $this->formatUser($user),
+        ]);
     }
 }

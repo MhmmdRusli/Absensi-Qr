@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Api\Teacher;
 
+use App\Exports\TeacherAttendanceExport;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\AttendanceSession;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use PDF;
 
 class ReportController extends Controller
 {
@@ -156,5 +159,131 @@ class ReportController extends Controller
             'per_siswa' => $perSiswa,
             'per_tanggal' => $perTanggal,
         ]);
+    }
+
+    public function export(Request $request)
+    {
+        $teacher = $request->user()->teacher;
+        $sessionIds = AttendanceSession::where('teacher_id', $teacher->id);
+
+        if ($request->filled('tanggal_mulai')) {
+            $sessionIds->whereDate('date', '>=', $request->input('tanggal_mulai'));
+        }
+        if ($request->filled('tanggal_akhir')) {
+            $sessionIds->whereDate('date', '<=', $request->input('tanggal_akhir'));
+        }
+        if ($request->filled('class_id')) {
+            $sessionIds->where('class_id', $request->input('class_id'));
+        }
+        if ($request->filled('subject_id')) {
+            $sessionIds->where('subject_id', $request->input('subject_id'));
+        }
+        $sessionIds = $sessionIds->pluck('id');
+
+        $data = Attendance::with(['student.user', 'attendanceSession.classRoom', 'attendanceSession.subject'])
+            ->whereIn('attendance_session_id', $sessionIds)
+            ->latest('scanned_at')
+            ->get()
+            ->map(fn ($a) => [
+                'nama_siswa' => $a->student->user->name,
+                'tanggal' => $a->attendanceSession->date->format('Y-m-d'),
+                'kelas' => $a->attendanceSession->classRoom->name,
+                'mata_pelajaran' => $a->attendanceSession->subject->name,
+                'status' => $a->status,
+                'waktu' => optional($a->scanned_at)->format('H:i') ?? '-',
+            ]);
+
+        $filename = 'laporan-absensi-' . now()->format('Y-m-d-His') . '.csv';
+
+        return response()->streamDownload(function () use ($data) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['Nama Siswa', 'Tanggal', 'Kelas', 'Mata Pelajaran', 'Status', 'Waktu']);
+            foreach ($data as $row) {
+                fputcsv($handle, [
+                    $row['nama_siswa'],
+                    $row['tanggal'],
+                    $row['kelas'],
+                    $row['mata_pelajaran'],
+                    $row['status'],
+                    $row['waktu'],
+                ]);
+            }
+            fclose($handle);
+        }, $filename, ['Content-Type' => 'text/csv']);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $teacher = $request->user()->teacher;
+        $sessionIds = AttendanceSession::where('teacher_id', $teacher->id);
+
+        if ($request->filled('tanggal_mulai')) {
+            $sessionIds->whereDate('date', '>=', $request->input('tanggal_mulai'));
+        }
+        if ($request->filled('tanggal_akhir')) {
+            $sessionIds->whereDate('date', '<=', $request->input('tanggal_akhir'));
+        }
+        if ($request->filled('class_id')) {
+            $sessionIds->where('class_id', $request->input('class_id'));
+        }
+        if ($request->filled('subject_id')) {
+            $sessionIds->where('subject_id', $request->input('subject_id'));
+        }
+        $sessionIds = $sessionIds->pluck('id');
+
+        $data = Attendance::with(['student.user', 'attendanceSession.classRoom', 'attendanceSession.subject'])
+            ->whereIn('attendance_session_id', $sessionIds)
+            ->latest('scanned_at')
+            ->get()
+            ->map(fn ($a) => [
+                'nama_siswa' => $a->student->user->name,
+                'tanggal' => $a->attendanceSession->date->format('Y-m-d'),
+                'kelas' => $a->attendanceSession->classRoom->name,
+                'mata_pelajaran' => $a->attendanceSession->subject->name,
+                'status' => $a->status,
+                'waktu' => optional($a->scanned_at)->format('H:i') ?? '-',
+            ]);
+
+        $filename = 'laporan-absensi-' . now()->format('Y-m-d-His') . '.pdf';
+        $pdf = PDF::loadView('teacher.report-export', ['data' => $data]);
+
+        return $pdf->download($filename);
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $teacher = $request->user()->teacher;
+        $sessionIds = AttendanceSession::where('teacher_id', $teacher->id);
+
+        if ($request->filled('tanggal_mulai')) {
+            $sessionIds->whereDate('date', '>=', $request->input('tanggal_mulai'));
+        }
+        if ($request->filled('tanggal_akhir')) {
+            $sessionIds->whereDate('date', '<=', $request->input('tanggal_akhir'));
+        }
+        if ($request->filled('class_id')) {
+            $sessionIds->where('class_id', $request->input('class_id'));
+        }
+        if ($request->filled('subject_id')) {
+            $sessionIds->where('subject_id', $request->input('subject_id'));
+        }
+        $sessionIds = $sessionIds->pluck('id');
+
+        $data = Attendance::with(['student.user', 'attendanceSession.classRoom', 'attendanceSession.subject'])
+            ->whereIn('attendance_session_id', $sessionIds)
+            ->latest('scanned_at')
+            ->get()
+            ->map(fn ($a) => [
+                'nama_siswa' => $a->student->user->name,
+                'tanggal' => $a->attendanceSession->date->format('Y-m-d'),
+                'kelas' => $a->attendanceSession->classRoom->name,
+                'mata_pelajaran' => $a->attendanceSession->subject->name,
+                'status' => $a->status,
+                'waktu' => optional($a->scanned_at)->format('H:i') ?? '-',
+            ]);
+
+        $filename = 'laporan-absensi-' . now()->format('Y-m-d-His') . '.xlsx';
+
+        return Excel::download(new TeacherAttendanceExport($data), $filename);
     }
 }

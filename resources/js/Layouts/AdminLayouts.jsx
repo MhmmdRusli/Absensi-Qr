@@ -1,9 +1,11 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { X } from 'lucide-react';
 import { useAuth } from '../Context/AuthContext';
 import {
     IconDashboard, IconStudents, IconTeachers, IconClasses,
     IconSubjects, IconReports, IconLogout, IconCalendar, IconBell,
-    IconHelp, IconChevronDown,
+    IconHelp, IconChevronDown, IconClock, IconCheckCircle,
 } from '../Components/Icons';
 
 const primaryNav = { to: '/admin/dashboard', label: 'Dashboard', icon: IconDashboard };
@@ -44,6 +46,32 @@ function NavItem({ to, label, icon: Icon }) {
 export default function AdminLayout() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+    const [notice, setNotice] = useState('');
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [showProfile, setShowProfile] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
+    const notifRef = useRef(null);
+    const profileRef = useRef(null);
+
+    const pageLabel = {
+        '/admin/dashboard': 'Dashboard',
+        '/admin/students': 'Data Siswa',
+        '/admin/teachers': 'Data Guru',
+        '/admin/classes': 'Data Kelas',
+        '/admin/subjects': 'Mata Pelajaran',
+        '/admin/reports': 'Laporan',
+    };
+    const currentPage = pageLabel[location.pathname] || 'Dashboard';
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (notifRef.current && !notifRef.current.contains(e.target)) setShowNotifications(false);
+            if (profileRef.current && !profileRef.current.contains(e.target)) setShowProfile(false);
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const handleLogout = async () => {
         await logout();
@@ -56,6 +84,12 @@ export default function AdminLayout() {
         .slice(0, 2)
         .join('')
         .toUpperCase();
+
+    const notifications = [
+        { id: 1, text: 'Sesi absensi kelas XI PPLG dimulai', time: '10 menit lalu', read: false },
+        { id: 2, text: 'Laporan absensi mingguan sudah di-generate', time: '2 jam lalu', read: true },
+        { id: 3, text: 'Data siswa kelas X telah diperbarui', time: 'Kemarin', read: true },
+    ];
 
     return (
         <div className="min-h-screen bg-slate-50 flex">
@@ -120,14 +154,9 @@ export default function AdminLayout() {
             {/* MAIN */}
             <div className="flex-1 ml-64 flex flex-col min-h-screen min-w-0">
                 <header className="sticky top-0 bg-white/95 backdrop-blur border-b border-slate-200 h-16 px-6 flex items-center justify-between z-20">
-                    <div className="flex flex-col">
-                        <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                            <span>Beranda</span>
-                            <span>/</span>
-                            <span className="text-[#0f2942] font-medium">Dashboard</span>
-                        </div>
+                    <div>
                         <h1 className="text-lg font-semibold text-slate-900 leading-tight">
-                            Dashboard Admin
+                            {currentPage}
                         </h1>
                     </div>
 
@@ -136,22 +165,129 @@ export default function AdminLayout() {
                             <IconCalendar />
                             <span>{today}</span>
                         </div>
-                        <button className="p-2 rounded-lg text-slate-400 border border-slate-200 hover:bg-slate-50 hover:text-slate-700 transition-colors">
-                            <IconBell />
-                        </button>
-                        <button className="p-2 rounded-lg text-slate-400 border border-slate-200 hover:bg-slate-50 hover:text-slate-700 transition-colors">
+                        <div className="relative" ref={notifRef}>
+                            <button
+                                onClick={() => { setShowNotifications(!showNotifications); }}
+                                className="relative p-2 rounded-lg text-slate-400 border border-slate-200 hover:bg-slate-50 hover:text-slate-700 transition-colors"
+                            >
+                                <IconBell />
+                                {!notifications.every((n) => n.read) && (
+                                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-white" />
+                                )}
+                            </button>
+                            {showNotifications && (
+                                <div className="absolute right-0 top-12 w-80 bg-white rounded-xl border border-slate-200 shadow-2xl z-50 overflow-hidden">
+                                    <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+                                        <span className="text-sm font-semibold text-[#1F2937]">Notifikasi</span>
+                                        <button
+                                            onClick={() => setShowNotifications(false)}
+                                            className="p-1 rounded hover:bg-slate-100 text-[#6B7280]"
+                                        >
+                                            <X size={14} />
+                                        </button>
+                                    </div>
+                                    <div className="max-h-64 overflow-y-auto">
+                                        {notifications.map((n) => (
+                                            <div key={n.id} className={`px-4 py-3 border-b border-slate-50 ${n.read ? 'bg-white' : 'bg-blue-50/50'}`}>
+                                                <p className="text-xs text-[#1F2937]">{n.text}</p>
+                                                <p className="text-[10px] text-[#9CA3AF] mt-1 flex items-center gap-1">
+                                                    <IconClock size={10} />
+                                                    {n.time}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="px-4 py-2 border-t border-slate-100 text-center">
+                                        <button
+                                            onClick={() => setShowNotifications(false)}
+                                            className="text-xs text-[#1E3A5F] font-medium hover:underline"
+                                        >
+                                            Lihat Semua
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <button
+                            onClick={() => { setShowHelp(!showHelp); setShowNotifications(false); }}
+                            className="p-2 rounded-lg text-slate-400 border border-slate-200 hover:bg-slate-50 hover:text-slate-700 transition-colors"
+                        >
                             <IconHelp />
                         </button>
                         <div className="h-6 w-px bg-slate-200" />
-                        <div className="flex items-center gap-2 py-1 px-2 rounded-lg cursor-pointer hover:bg-slate-50">
-                            <div className="w-7 h-7 rounded-full bg-[#0f2942] text-white flex items-center justify-center text-[10px] font-bold">
-                                {initials}
-                            </div>
-                            <span className="text-sm text-slate-700 hidden sm:inline">{user?.name}</span>
-                            <IconChevronDown className="text-slate-400" />
+                        <div className="relative">
+                            <button
+                                onClick={() => { setShowProfile(!showProfile); setShowNotifications(false); }}
+                                className="flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-slate-50 transition-colors"
+                            >
+                                <div className="w-7 h-7 rounded-full bg-[#0f2942] text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+                                    {initials}
+                                </div>
+                                <span className="text-sm text-slate-700 hidden sm:inline">{user?.name}</span>
+                                <IconChevronDown className="text-slate-400" />
+                            </button>
+                            {showProfile && (
+                                <div className="absolute right-0 top-12 w-52 bg-white rounded-xl border border-slate-200 shadow-2xl z-50 overflow-hidden">
+                                    <div className="px-4 py-3 border-b border-slate-100">
+                                        <p className="text-sm font-semibold text-[#1F2937]">{user?.name}</p>
+                                        <p className="text-[11px] text-[#9CA3AF]">Administrator</p>
+                                    </div>
+                                    <div className="py-1">
+                                        <button
+                                            onClick={() => { setShowProfile(false); navigate('/admin/profile'); }}
+                                            className="w-full text-left px-4 py-2 text-sm text-[#1F2937] hover:bg-slate-50 transition-colors flex items-center gap-2"
+                                        >
+                                            <IconCheckCircle size={14} />
+                                            Profil
+                                        </button>
+                                        <button
+                                            onClick={() => { setShowProfile(false); handleLogout(); }}
+                                            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                                        >
+                                            <IconLogout size={14} />
+                                            Logout
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </header>
+
+                {showHelp && (
+                    <div className="fixed inset-0 z-50 bg-[#0F172A]/40 backdrop-blur-sm flex items-center justify-center p-4">
+                        <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-2xl max-w-md w-full p-5">
+                            <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3 mb-4">
+                                <h3 className="text-base font-semibold text-[#1F2937]">Bantuan</h3>
+                                <button onClick={() => setShowHelp(false)} className="text-[#9CA3AF] hover:text-[#1F2937]">
+                                    <X size={18} />
+                                </button>
+                            </div>
+                            <div className="space-y-3 text-sm text-[#6B7280]">
+                                <p><strong className="text-[#1F2937]">1. Dashboard</strong> — Lihat ringkasan dan statistik absensi.</p>
+                                <p><strong className="text-[#1F2937]">2. Data Siswa</strong> — Kelola data siswa.</p>
+                                <p><strong className="text-[#1F2937]">3. Data Guru</strong> — Kelola data guru.</p>
+                                <p><strong className="text-[#1F2937]">4. Data Kelas</strong> — Kelola data kelas dan tingkat.</p>
+                                <p><strong className="text-[#1F2937]">5. Mata Pelajaran</strong> — Kelola data mata pelajaran.</p>
+                                <p><strong className="text-[#1F2937]">6. Laporan</strong> — Lihat laporan absensi.</p>
+                            </div>
+                            <div className="flex justify-end pt-4">
+                                <button
+                                    onClick={() => setShowHelp(false)}
+                                    className="h-9 px-4 rounded-lg bg-[#1E3A5F] text-white text-sm font-medium hover:bg-[#16304F] transition-colors"
+                                >
+                                    Tutup
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {notice && (
+                    <div className="fixed top-20 right-6 z-50 bg-amber-50 text-amber-700 text-sm px-4 py-2 rounded-lg border border-amber-200 shadow-sm">
+                        {notice}
+                    </div>
+                )}
 
                 <main className="flex-1 p-6 space-y-6 overflow-x-auto">
                     <Outlet />

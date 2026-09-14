@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard,
@@ -9,6 +9,7 @@ import {
     X,
     Bell,
     ChevronRight,
+    ChevronDown,
     CalendarDays,
     GraduationCap,
 } from 'lucide-react';
@@ -32,6 +33,23 @@ export default function StudentLayouts() {
     const navigate = useNavigate();
     const location = useLocation();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [showProfile, setShowProfile] = useState(false);
+    const notifRef = useRef(null);
+    const profileRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (notifRef.current && !notifRef.current.contains(e.target)) {
+                setShowNotifications(false);
+            }
+            if (profileRef.current && !profileRef.current.contains(e.target)) {
+                setShowProfile(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const currentLabel =
         navItems.find((item) => location.pathname.startsWith(item.to))?.label || 'Dashboard';
@@ -168,20 +186,80 @@ export default function StudentLayouts() {
                             <CalendarDays size={14} className="text-[#1E3A5F]" />
                             <span>{today}</span>
                         </div>
-                        <button className="p-1.5 rounded-lg text-[#6B7280] hover:text-[#1E3A5F] hover:bg-[#F5F7FA] transition-colors" title="Notifikasi">
-                            <Bell size={20} />
-                        </button>
+                        <div className="relative" ref={notifRef}>
+                            <button
+                                className="p-1.5 rounded-lg text-[#6B7280] hover:text-[#1E3A5F] hover:bg-[#F5F7FA] transition-colors"
+                                title="Notifikasi"
+                                onClick={() => setShowNotifications(!showNotifications)}
+                            >
+                                <Bell size={20} />
+                            </button>
+                            {showNotifications && (
+                                <div className="absolute right-0 top-10 w-72 bg-white rounded-xl border border-[#E5E7EB] shadow-2xl z-50 overflow-hidden">
+                                    <div className="px-4 py-3 border-b border-[#E5E7EB] flex items-center justify-between">
+                                        <span className="text-sm font-semibold text-[#1F2937]">Notifikasi</span>
+                                        <button
+                                            onClick={() => setShowNotifications(false)}
+                                            className="p-1 rounded hover:bg-gray-100 text-[#6B7280]"
+                                        >
+                                            <X size={14} />
+                                        </button>
+                                    </div>
+                                    <div className="max-h-48 overflow-y-auto">
+                                        <div className="px-4 py-3 bg-blue-50/50 border-l-2 border-blue-500">
+                                            <p className="text-xs text-[#1F2937]">Belum ada notifikasi</p>
+                                            <p className="text-[10px] text-[#9CA3AF] mt-1">Semua sudah dibaca</p>
+                                        </div>
+                                    </div>
+                                    <div className="px-4 py-2 border-t border-[#E5E7EB] text-center">
+                                        <button
+                                            onClick={() => setShowNotifications(false)}
+                                            className="text-xs text-[#1E3A5F] font-medium hover:underline"
+                                        >
+                                            Lihat Semua
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                         <div className="h-5 w-[1px] bg-[#E5E7EB]" />
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-[#1E3A5F] text-white font-bold text-xs flex items-center justify-center">
-                                {getInitials(user?.name)}
-                            </div>
-                            <div className="hidden md:block text-left leading-tight">
-                                <span className="block text-[12px] font-semibold text-[#1F2937]">
-                                    {user?.name || 'Siswa'}
-                                </span>
-                                <span className="block text-[11px] text-[#6B7280]">Siswa</span>
-                            </div>
+                        <div className="relative" ref={profileRef}>
+                            <button
+                                className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-[#F5F7FA] transition-colors cursor-pointer"
+                                onClick={() => setShowProfile(!showProfile)}
+                                title="Profile"
+                            >
+                                <div className="w-8 h-8 rounded-full bg-[#1E3A5F] text-white font-bold text-xs flex items-center justify-center">
+                                    {getInitials(user?.name)}
+                                </div>
+                                <div className="hidden md:block text-left leading-tight">
+                                    <span className="block text-[12px] font-semibold text-[#1F2937]">
+                                        {user?.name || 'Siswa'}
+                                    </span>
+                                    <span className="block text-[11px] text-[#6B7280]">Siswa</span>
+                                </div>
+                                <ChevronDown size={14} className="text-[#6B7280]" />
+                            </button>
+                            {showProfile && (
+                                <div className="absolute right-0 top-10 w-48 bg-white rounded-xl border border-[#E5E7EB] shadow-2xl z-50 overflow-hidden py-1">
+                                    <button
+                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-[#1F2937] hover:bg-[#F5F7FA] transition-colors"
+                                        onClick={() => {
+                                            setShowProfile(false);
+                                            navigate('/student/profile');
+                                        }}
+                                    >
+                                        <span>Profile</span>
+                                    </button>
+                                    <button
+                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                        onClick={handleLogout}
+                                    >
+                                        <LogOut size={16} />
+                                        <span>Logout</span>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </header>

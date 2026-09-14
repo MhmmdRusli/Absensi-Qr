@@ -65,11 +65,6 @@ export default function ReportIndex() {
         setLoading(false);
     };
 
-    const handleExportCsv = () => {
-        const params = new URLSearchParams(filters).toString();
-        window.location.href = `/api/admin/reports/export?${params}`;
-    };
-
     useEffect(() => {
         fetchOptions();
     }, []);
@@ -184,19 +179,17 @@ export default function ReportIndex() {
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                     <button
-                        disabled
-                        title="Belum tersedia — backend hanya menyediakan export CSV"
-                        className="h-9 px-3 border border-[#E5E7EB] bg-[#F5F7FA] text-[#9CA3AF] rounded-lg text-sm flex items-center gap-1.5 cursor-not-allowed"
+                        onClick={() => { const p = new URLSearchParams(filters).toString(); window.location.href = `/api/admin/reports/export/pdf?${p}`; }}
+                        className="h-9 px-3 border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] rounded-lg text-sm flex items-center gap-1.5 transition-colors"
                     >
-                        <FileText size={16} className="text-red-400" />
+                        <FileText size={16} className="text-red-500" />
                         <span>PDF</span>
                     </button>
                     <button
-                        disabled
-                        title="Belum tersedia — backend hanya menyediakan export CSV"
-                        className="h-9 px-3 border border-[#E5E7EB] bg-[#F5F7FA] text-[#9CA3AF] rounded-lg text-sm flex items-center gap-1.5 cursor-not-allowed"
+                        onClick={() => { const p = new URLSearchParams(filters).toString(); window.location.href = `/api/admin/reports/export/excel?${p}`; }}
+                        className="h-9 px-3 border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] rounded-lg text-sm flex items-center gap-1.5 transition-colors"
                     >
-                        <FileSpreadsheet size={16} className="text-emerald-400" />
+                        <FileSpreadsheet size={16} className="text-emerald-500" />
                         <span>Excel</span>
                     </button>
                     <button
@@ -378,95 +371,6 @@ export default function ReportIndex() {
                 </div>
             </div>
 
-            {/* TREN + DONUT */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-                <div className="lg:col-span-8 bg-white border border-[#E5E7EB] rounded-xl p-5">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#E5E7EB] gap-2">
-                        <div>
-                            <h2 className="text-base font-semibold" style={{ color: NAVY }}>Tren Kehadiran Harian</h2>
-                            <p className="text-xs text-[#6B7280]">Berdasarkan rentang tanggal filter aktif</p>
-                        </div>
-                        <div className="flex items-center gap-3 text-xs flex-wrap">
-                            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-emerald-600" />Hadir</span>
-                            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-amber-500" />Izin</span>
-                            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-blue-500" />Sakit</span>
-                            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-rose-500" />Alpa</span>
-                        </div>
-                    </div>
-
-                    {perTanggal.length === 0 ? (
-                        <div className="py-14 text-center text-sm text-[#9CA3AF]">Tidak ada data untuk rentang ini.</div>
-                    ) : (
-                        <div className="pt-6 pb-2 overflow-x-auto">
-                            <div className="h-48 flex items-end gap-3 px-1 min-w-[480px]">
-                                {perTanggal.map((d) => {
-                                    const h = Math.max(4, (d.total / maxBarTotal) * 100);
-                                    return (
-                                        <div key={d.tanggal} className="flex-1 flex flex-col items-center gap-2">
-                                            <span className="text-[11px] font-semibold text-[#1F2937]">{d.pct.toFixed(0)}%</span>
-                                            <div className="w-full max-w-[36px] rounded-t overflow-hidden bg-slate-100 flex flex-col justify-end" style={{ height: '160px' }}>
-                                                <div className="w-full flex flex-col" style={{ height: `${h}%` }}>
-                                                    <div className="w-full bg-rose-500" style={{ height: `${(d.alpa / d.total) * 100}%` }} />
-                                                    <div className="w-full bg-blue-500" style={{ height: `${(d.sakit / d.total) * 100}%` }} />
-                                                    <div className="w-full bg-amber-500" style={{ height: `${(d.izin / d.total) * 100}%` }} />
-                                                    <div className="w-full bg-emerald-600 flex-1" />
-                                                </div>
-                                            </div>
-                                            <span className="text-[10px] text-[#6B7280] text-center">{fmtDate(d.tanggal)}</span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
-                    <div className="pt-3 border-t border-[#E5E7EB] text-xs text-[#6B7280]">
-                        Rata-rata kehadiran periode ini: <strong className="text-[#1F2937]">{agg.pctHadir.toFixed(1)}%</strong>
-                    </div>
-                </div>
-
-                <div className="lg:col-span-4 bg-white border border-[#E5E7EB] rounded-xl p-5 flex flex-col justify-between">
-                    <div className="pb-3 border-b border-[#E5E7EB]">
-                        <h2 className="text-base font-semibold" style={{ color: NAVY }}>Distribusi Status Kehadiran</h2>
-                        <p className="text-xs text-[#6B7280]">Proporsi status pada data hasil filter</p>
-                    </div>
-                    <div className="py-4 flex flex-col items-center justify-center">
-                        <div className="relative w-40 h-40 flex items-center justify-center">
-                            <svg viewBox="0 0 36 36" className="w-36 h-36 -rotate-90">
-                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#F1F5F9" strokeWidth="3.8" />
-                                {agg.total > 0 && (
-                                    <>
-                                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#10b981" strokeDasharray={`${(agg.hadir / agg.total) * 100}, 100`} strokeLinecap="round" strokeWidth="3.8" />
-                                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f59e0b" strokeDasharray={`${(agg.izin / agg.total) * 100}, 100`} strokeDashoffset={`${-(agg.hadir / agg.total) * 100}`} strokeWidth="3.8" />
-                                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#3b82f6" strokeDasharray={`${(agg.sakit / agg.total) * 100}, 100`} strokeDashoffset={`${-((agg.hadir + agg.izin) / agg.total) * 100}`} strokeWidth="3.8" />
-                                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#ef4444" strokeDasharray={`${(agg.alpa / agg.total) * 100}, 100`} strokeDashoffset={`${-((agg.hadir + agg.izin + agg.sakit) / agg.total) * 100}`} strokeWidth="3.8" />
-                                    </>
-                                )}
-                            </svg>
-                            <div className="absolute flex flex-col items-center">
-                                <span className="text-xl font-bold" style={{ color: NAVY }}>{agg.pctHadir.toFixed(1)}%</span>
-                                <span className="text-[10px] text-[#6B7280] uppercase">Hadir</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="space-y-2 border-t border-[#E5E7EB] pt-3 text-sm">
-                        {[
-                            ['Hadir', agg.hadir, 'bg-emerald-500'],
-                            ['Izin', agg.izin, 'bg-amber-500'],
-                            ['Sakit', agg.sakit, 'bg-blue-500'],
-                            ['Alpa', agg.alpa, 'bg-rose-500'],
-                        ].map(([label, val, dot]) => (
-                            <div key={label} className="flex items-center justify-between">
-                                <span className="flex items-center gap-2 text-[#1F2937]"><span className={`w-2.5 h-2.5 rounded-full ${dot}`} />{label}</span>
-                                <span>
-                                    <span className="font-semibold text-[#1F2937]">{val}</span>
-                                    <span className="text-[#9CA3AF] text-xs ml-1">({agg.total ? ((val / agg.total) * 100).toFixed(1) : 0}%)</span>
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
             {/* REKAP PER KELAS */}
             <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden">
                 <div className="p-4 border-b border-[#E5E7EB]">
@@ -629,6 +533,95 @@ export default function ReportIndex() {
                 )}
             </div>
 
+            {/* TREN + DONUT */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                <div className="lg:col-span-8 bg-white border border-[#E5E7EB] rounded-xl p-5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#E5E7EB] gap-2">
+                        <div>
+                            <h2 className="text-base font-semibold" style={{ color: NAVY }}>Tren Kehadiran Harian</h2>
+                            <p className="text-xs text-[#6B7280]">Berdasarkan rentang tanggal filter aktif</p>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs flex-wrap">
+                            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-emerald-600" />Hadir</span>
+                            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-amber-500" />Izin</span>
+                            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-blue-500" />Sakit</span>
+                            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-rose-500" />Alpa</span>
+                        </div>
+                    </div>
+
+                    {perTanggal.length === 0 ? (
+                        <div className="py-14 text-center text-sm text-[#9CA3AF]">Tidak ada data untuk rentang ini.</div>
+                    ) : (
+                        <div className="pt-6 pb-2 overflow-x-auto">
+                            <div className="h-48 flex items-end gap-3 px-1 min-w-[480px]">
+                                {perTanggal.map((d) => {
+                                    const h = Math.max(4, (d.total / maxBarTotal) * 100);
+                                    return (
+                                        <div key={d.tanggal} className="flex-1 flex flex-col items-center gap-2">
+                                            <span className="text-[11px] font-semibold text-[#1F2937]">{d.pct.toFixed(0)}%</span>
+                                            <div className="w-full max-w-[36px] rounded-t overflow-hidden bg-slate-100 flex flex-col justify-end" style={{ height: '160px' }}>
+                                                <div className="w-full flex flex-col" style={{ height: `${h}%` }}>
+                                                    <div className="w-full bg-rose-500" style={{ height: `${(d.alpa / d.total) * 100}%` }} />
+                                                    <div className="w-full bg-blue-500" style={{ height: `${(d.sakit / d.total) * 100}%` }} />
+                                                    <div className="w-full bg-amber-500" style={{ height: `${(d.izin / d.total) * 100}%` }} />
+                                                    <div className="w-full bg-emerald-600 flex-1" />
+                                                </div>
+                                            </div>
+                                            <span className="text-[10px] text-[#6B7280] text-center">{fmtDate(d.tanggal)}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+                    <div className="pt-3 border-t border-[#E5E7EB] text-xs text-[#6B7280]">
+                        Rata-rata kehadiran periode ini: <strong className="text-[#1F2937]">{agg.pctHadir.toFixed(1)}%</strong>
+                    </div>
+                </div>
+
+                <div className="lg:col-span-4 bg-white border border-[#E5E7EB] rounded-xl p-5 flex flex-col justify-between">
+                    <div className="pb-3 border-b border-[#E5E7EB]">
+                        <h2 className="text-base font-semibold" style={{ color: NAVY }}>Distribusi Status Kehadiran</h2>
+                        <p className="text-xs text-[#6B7280]">Proporsi status pada data hasil filter</p>
+                    </div>
+                    <div className="py-4 flex flex-col items-center justify-center">
+                        <div className="relative w-40 h-40 flex items-center justify-center">
+                            <svg viewBox="0 0 36 36" className="w-36 h-36 -rotate-90">
+                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#F1F5F9" strokeWidth="3.8" />
+                                {agg.total > 0 && (
+                                    <>
+                                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#10b981" strokeDasharray={`${(agg.hadir / agg.total) * 100}, 100`} strokeLinecap="round" strokeWidth="3.8" />
+                                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f59e0b" strokeDasharray={`${(agg.izin / agg.total) * 100}, 100`} strokeDashoffset={`${-(agg.hadir / agg.total) * 100}`} strokeWidth="3.8" />
+                                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#3b82f6" strokeDasharray={`${(agg.sakit / agg.total) * 100}, 100`} strokeDashoffset={`${-((agg.hadir + agg.izin) / agg.total) * 100}`} strokeWidth="3.8" />
+                                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#ef4444" strokeDasharray={`${(agg.alpa / agg.total) * 100}, 100`} strokeDashoffset={`${-((agg.hadir + agg.izin + agg.sakit) / agg.total) * 100}`} strokeWidth="3.8" />
+                                    </>
+                                )}
+                            </svg>
+                            <div className="absolute flex flex-col items-center">
+                                <span className="text-xl font-bold" style={{ color: NAVY }}>{agg.pctHadir.toFixed(1)}%</span>
+                                <span className="text-[10px] text-[#6B7280] uppercase">Hadir</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="space-y-2 border-t border-[#E5E7EB] pt-3 text-sm">
+                        {[
+                            ['Hadir', agg.hadir, 'bg-emerald-500'],
+                            ['Izin', agg.izin, 'bg-amber-500'],
+                            ['Sakit', agg.sakit, 'bg-blue-500'],
+                            ['Alpa', agg.alpa, 'bg-rose-500'],
+                        ].map(([label, val, dot]) => (
+                            <div key={label} className="flex items-center justify-between">
+                                <span className="flex items-center gap-2 text-[#1F2937]"><span className={`w-2.5 h-2.5 rounded-full ${dot}`} />{label}</span>
+                                <span>
+                                    <span className="font-semibold text-[#1F2937]">{val}</span>
+                                    <span className="text-[#9CA3AF] text-xs ml-1">({agg.total ? ((val / agg.total) * 100).toFixed(1) : 0}%)</span>
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
             {/* MODAL EXPORT */}
             {exportModalOpen && (
                 <div className="fixed inset-0 z-50 bg-[#0F172A]/40 backdrop-blur-sm flex items-center justify-center p-4">
@@ -640,22 +633,19 @@ export default function ReportIndex() {
                         <label className="block text-sm font-medium text-[#1F2937] mb-1.5">Pilih Format Berkas</label>
                         <div className="grid grid-cols-3 gap-2 mb-4">
                             {[
-                                ['pdf', 'PDF', true],
-                                ['excel', 'Excel', true],
+                                ['pdf', 'PDF', false],
+                                ['excel', 'Excel', false],
                                 ['csv', 'CSV', false],
                             ].map(([val, label, disabled]) => (
                                 <label
                                     key={val}
-                                    title={disabled ? 'Belum tersedia' : undefined}
                                     className={`flex items-center gap-2 p-2 rounded border cursor-pointer ${
-                                        disabled ? 'opacity-40 cursor-not-allowed border-[#E5E7EB]' :
                                         exportFormat === val ? 'border-2' : 'border-[#E5E7EB]'
                                     }`}
-                                    style={!disabled && exportFormat === val ? { borderColor: NAVY, background: '#EFF4FF' } : undefined}
+                                    style={exportFormat === val ? { borderColor: NAVY, background: '#EFF4FF' } : undefined}
                                 >
                                     <input
                                         type="radio"
-                                        disabled={disabled}
                                         checked={exportFormat === val}
                                         onChange={() => setExportFormat(val)}
                                     />
@@ -668,7 +658,17 @@ export default function ReportIndex() {
                                 Batal
                             </button>
                             <button
-                                onClick={() => { handleExportCsv(); setExportModalOpen(false); }}
+                                onClick={() => {
+                                    const params = new URLSearchParams(filters).toString();
+                                    if (exportFormat === 'pdf') {
+                                        window.location.href = `/api/admin/reports/export/pdf?${params}`;
+                                    } else if (exportFormat === 'excel') {
+                                        window.location.href = `/api/admin/reports/export/excel?${params}`;
+                                    } else {
+                                        window.location.href = `/api/admin/reports/export?${params}`;
+                                    }
+                                    setExportModalOpen(false);
+                                }}
                                 className="h-9 px-4 rounded-lg text-white text-sm flex items-center gap-2"
                                 style={{ background: NAVY }}
                             >

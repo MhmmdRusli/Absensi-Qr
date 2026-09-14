@@ -13,6 +13,7 @@ class Student extends Model
         'user_id',
         'nis',
         'class_id',
+        'status',
     ];
 
     public function user()
@@ -28,5 +29,10 @@ class Student extends Model
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    public function permissions()
+    {
+        return $this->hasMany(Permission::class);
     }
 }

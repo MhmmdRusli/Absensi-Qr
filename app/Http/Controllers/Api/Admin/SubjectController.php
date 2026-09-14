@@ -71,4 +71,30 @@ class SubjectController extends Controller
             'data' => Subject::select('id', 'name', 'tingkat', 'guru_pengampu', 'status')->orderBy('name')->get(),
         ]);
     }
+
+    public function export()
+    {
+        $subjects = Subject::orderBy('name')->get(['id', 'name', 'tingkat', 'guru_pengampu', 'status']);
+
+        $filename = 'data-mata-pelajaran-' . now()->format('Y-m-d-His') . '.csv';
+
+        return response()->streamDownload(function () use ($subjects) {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, ['Nama Mata Pelajaran', 'Tingkat', 'Guru Pengampu', 'Status']);
+
+            foreach ($subjects as $s) {
+                fputcsv($handle, [
+                    $s->name,
+                    $s->tingkat,
+                    $s->guru_pengampu,
+                    $s->status,
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv',
+        ]);
+    }
 }

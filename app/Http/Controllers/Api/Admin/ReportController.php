@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Exports\AttendanceExport;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use PDF;
 
 class ReportController extends Controller
 {
@@ -44,6 +47,23 @@ class ReportController extends Controller
         }, $filename, [
             'Content-Type' => 'text/csv',
         ]);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $data = $this->filteredQuery($request)->latest('scanned_at')->get()->map(fn ($attendance) => $this->formatRow($attendance));
+        $filename = 'laporan-absensi-' . now()->format('Y-m-d-His') . '.pdf';
+
+        $pdf = PDF::loadView('report.pdf', ['data' => $data]);
+
+        return $pdf->download($filename);
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $filename = 'laporan-absensi-' . now()->format('Y-m-d-His') . '.xlsx';
+
+        return Excel::download(new AttendanceExport($request->only(['tanggal_mulai', 'tanggal_akhir', 'class_id', 'subject_id', 'status'])), $filename);
     }
 
     private function filteredQuery(Request $request)

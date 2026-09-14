@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard,
@@ -12,6 +12,7 @@ import {
     X,
     Bell,
     ChevronRight,
+    ChevronDown,
     CalendarDays,
     GraduationCap,
     Plus,
@@ -75,6 +76,23 @@ export default function TeacherLayouts() {
     const navigate = useNavigate();
     const location = useLocation();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [showProfile, setShowProfile] = useState(false);
+    const notifRef = useRef(null);
+    const profileRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (notifRef.current && !notifRef.current.contains(e.target)) {
+                setShowNotifications(false);
+            }
+            if (profileRef.current && !profileRef.current.contains(e.target)) {
+                setShowProfile(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const currentLabel =
         navItems.find((item) => location.pathname.startsWith(item.to))?.label || 'Dashboard';
@@ -239,20 +257,82 @@ export default function TeacherLayouts() {
                             <CalendarDays size={14} className="text-[#1E3A5F]" />
                             <span>{today}</span>
                         </div>
-                        <button className="p-1.5 rounded-lg text-[#6B7280] hover:text-[#1E3A5F] hover:bg-[#F5F7FA]" title="Notifikasi">
-                            <Bell size={20} />
-                        </button>
+                        <div className="relative" ref={notifRef}>
+                            <button
+                                className="p-1.5 rounded-lg text-[#6B7280] hover:text-[#1E3A5F] hover:bg-[#F5F7FA]"
+                                title="Notifikasi"
+                                onClick={() => setShowNotifications(!showNotifications)}
+                            >
+                                <Bell size={20} />
+                            </button>
+                            {showNotifications && (
+                                <div className="absolute right-0 top-10 w-72 bg-white rounded-xl border border-[#E5E7EB] shadow-2xl z-50 overflow-hidden">
+                                    <div className="px-4 py-3 border-b border-[#E5E7EB] flex items-center justify-between">
+                                        <span className="text-sm font-semibold text-[#1F2937]">Notifikasi</span>
+                                        <button
+                                            onClick={() => setShowNotifications(false)}
+                                            className="p-1 rounded hover:bg-gray-100 text-[#6B7280]"
+                                        >
+                                            <X size={14} />
+                                        </button>
+                                    </div>
+                                    <div className="max-h-48 overflow-y-auto">
+                                        <div className="px-4 py-3 bg-blue-50/50 border-l-2 border-blue-500">
+                                            <p className="text-xs text-[#1F2937]">Belum ada notifikasi</p>
+                                            <p className="text-[10px] text-[#9CA3AF] mt-1">Semua sudah dibaca</p>
+                                        </div>
+                                    </div>
+                                    <div className="px-4 py-2 border-t border-[#E5E7EB] text-center">
+                                        <button
+                                            onClick={() => setShowNotifications(false)}
+                                            className="text-xs text-[#1E3A5F] font-medium hover:underline"
+                                        >
+                                            Lihat Semua
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                         <button className="p-1.5 rounded-lg text-[#6B7280] hover:text-[#1E3A5F] hover:bg-[#F5F7FA]" title="Bantuan">
                             <HelpCircle size={20} />
                         </button>
                         <div className="h-5 w-[1px] bg-[#E5E7EB]" />
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-[#1E3A5F] text-white font-bold text-xs flex items-center justify-center">
-                                {getInitials(user?.name)}
-                            </div>
-                            <span className="hidden md:inline text-[12px] font-semibold text-[#1F2937]">
-                                {user?.name || 'Guru'} (Guru)
-                            </span>
+                        <div className="relative" ref={profileRef}>
+                            <button
+                                onClick={() => { setShowProfile(!showProfile); setShowNotifications(false); }}
+                                className="flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-[#F5F7FA] transition-colors"
+                            >
+                                <div className="w-8 h-8 rounded-full bg-[#1E3A5F] text-white font-bold text-xs flex items-center justify-center">
+                                    {getInitials(user?.name)}
+                                </div>
+                                <span className="hidden md:inline text-[12px] font-semibold text-[#1F2937]">
+                                    {user?.name || 'Guru'}
+                                </span>
+                                <ChevronDown size={14} className="text-[#6B7280]" />
+                            </button>
+                            {showProfile && (
+                                <div className="absolute right-0 top-10 w-52 bg-white rounded-xl border border-[#E5E7EB] shadow-2xl z-50 overflow-hidden">
+                                    <div className="px-4 py-3 border-b border-[#E5E7EB]">
+                                        <p className="text-sm font-semibold text-[#1F2937]">{user?.name || 'Guru'}</p>
+                                        <p className="text-[11px] text-[#9CA3AF]">Guru</p>
+                                    </div>
+                                    <div className="py-1">
+                                        <button
+                                            onClick={() => { setShowProfile(false); navigate('/teacher/dashboard'); }}
+                                            className="w-full text-left px-4 py-2 text-sm text-[#1F2937] hover:bg-[#F5F7FA] transition-colors flex items-center gap-2"
+                                        >
+                                            Profil
+                                        </button>
+                                        <button
+                                            onClick={() => { setShowProfile(false); handleLogout(); }}
+                                            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                                        >
+                                            <LogOut size={14} />
+                                            Logout
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </header>

@@ -9,6 +9,7 @@ import TeacherLayout from './Layouts/TeacherLayouts';
 import StudentLayout from './Layouts/StudentLayouts';
 
 import AdminDashboard from './Pages/Admin/Dashboard';
+import ProfileIndex from './Pages/Admin/Profile';
 import TeacherDashboard from './Pages/Teacher/Dashboard';
 import StudentDashboard from './Pages/Student/Dashboard';
 
@@ -28,6 +29,7 @@ import TeacherReportsIndex from './Pages/Teacher/Reports/Index';
 
 import Scan from './Pages/Student/Scan';
 import History from './Pages/Student/History';
+import StudentProfile from './Pages/Student/Profile';
 
 export default function AppRouter() {
     return (
@@ -65,6 +67,11 @@ export default function AppRouter() {
                         <Route
                             path="dashboard"
                             element={<AdminDashboard />}
+                        />
+
+                        <Route
+                            path="profile"
+                            element={<ProfileIndex />}
                         />
 
                         <Route
@@ -171,6 +178,11 @@ export default function AppRouter() {
                         <Route
                             path="history"
                             element={<History />}
+                        />
+
+                        <Route
+                            path="profile"
+                            element={<StudentProfile />}
                         />
                     </Route>
                 </Routes>
