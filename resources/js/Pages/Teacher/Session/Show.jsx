@@ -5,6 +5,9 @@ import {
     AlertTriangle,
     X,
     Loader2,
+    Download,
+    FileSpreadsheet,
+    FileText,
 } from 'lucide-react';
 import api from '../../../Lib/axios';
 
@@ -37,6 +40,25 @@ export default function SessionShow() {
         await api.post(`/teacher/sessions/${id}/close`);
         await fetchSession();
         setIsClosing(false);
+    };
+
+    const handleExport = async (format) => {
+        try {
+            const response = await api.get(`/teacher/sessions/${id}/export/${format}`, {
+                responseType: 'blob',
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            const filename = `absensi-${session.kelas}-${session.tanggal}.${format === 'pdf' ? 'pdf' : 'xlsx'}`;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('Export failed:', error);
+            alert('Gagal mengekspor data');
+        }
     };
 
     if (loading) {
@@ -83,7 +105,25 @@ export default function SessionShow() {
             <div className="bg-white rounded-xl border border-gray-200">
                 <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
                     <h2 className="font-semibold text-gray-900">Daftar Siswa</h2>
-                    <span className="text-sm text-gray-500">Hadir: {session.total_hadir} / {session.total_siswa} siswa</span>
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-500">Hadir: {session.total_hadir} / {session.total_siswa} siswa</span>
+                        <button
+                            onClick={() => handleExport('pdf')}
+                            className="px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded-lg hover:bg-red-700 transition-colors flex items-center gap-1"
+                            title="Export PDF"
+                        >
+                            <FileText size={12} />
+                            <span>PDF</span>
+                        </button>
+                        <button
+                            onClick={() => handleExport('excel')}
+                            className="px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700 transition-colors flex items-center gap-1"
+                            title="Export Excel"
+                        >
+                            <FileSpreadsheet size={12} />
+                            <span>Excel</span>
+                        </button>
+                    </div>
                 </div>
 
                 <table className="w-full text-sm">

@@ -57,6 +57,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/schedules', [ScheduleController::class, 'store']);
         Route::delete('/schedules/{schedule}', [ScheduleController::class, 'destroy']);
         Route::post('/sessions/{attendanceSession}/close', [AttendanceSessionController::class, 'close']);
+        Route::get('/sessions/{attendanceSession}/export', [AttendanceSessionController::class, 'export']);
+        Route::get('/sessions/{attendanceSession}/export/pdf', [AttendanceSessionController::class, 'exportPdf']);
+        Route::get('/sessions/{attendanceSession}/export/excel', [AttendanceSessionController::class, 'exportExcel']);
         Route::get('/dashboard', [TeacherDashboardController::class, 'index']);
         Route::apiResource('sessions', AttendanceSessionController::class)
             ->only(['index', 'store', 'show'])

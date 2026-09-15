@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Api\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Models\AttendanceSession;
+use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\AttendanceSessionExport;
+use PDF;
 
 class AttendanceSessionController extends Controller
 {
@@ -71,6 +75,39 @@ class AttendanceSessionController extends Controller
         return response()->json([
             'message' => 'Sesi absensi berhasil ditutup.',
         ]);
+    }
+
+    public function export(Request $request, AttendanceSession $attendanceSession)
+    {
+        $this->authorizeOwnership($request, $attendanceSession);
+
+        return Excel::download(new AttendanceSessionExport($attendanceSession), "absensi-{$attendanceSession->classRoom->name}-{$attendanceSession->date}.xlsx");
+    }
+
+    public function exportPdf(Request $request, AttendanceSession $attendanceSession)
+    {
+        $this->authorizeOwnership($request, $attendanceSession);
+
+        $attendanceSession->load(['classRoom', 'subject']);
+        $students = $attendanceSession->classRoom->students()->with('user')->get();
+        $attendances = $attendanceSession->attendances()->get()->keyBy('student_id');
+
+        $data = [
+            'session' => $attendanceSession,
+            'students' => $students->map(function ($student) use ($attendances) {
+                $attendance = $attendances->get($student->id);
+                return [
+                    'nama' => $student->user->name,
+                    'status' => $attendance?->status ?? 'belum',
+                    'waktu' => optional($attendance?->scanned_at)->format('H:i'),
+                ];
+            }),
+            'total_siswa' => $students->count(),
+            'total_hadir' => $attendances->where('status', 'hadir')->count(),
+        ];
+
+        $pdf = PDF::loadView('teacher.session-export', $data);
+        return $pdf->download("absensi-{$attendanceSession->classRoom->name}-{$attendanceSession->date}.pdf");
     }
 
     private function authorizeOwnership(Request $request, AttendanceSession $attendanceSession): void

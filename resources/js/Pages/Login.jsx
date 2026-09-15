@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { GraduationCap } from 'lucide-react';
 import { useAuth } from '../Context/AuthContext';
 
 export default function Login() {
@@ -33,31 +34,51 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="w-full max-w-sm bg-white p-8 rounded-xl shadow-sm border border-gray-200">
-                <h1 className="text-xl font-bold text-gray-900 mb-1">Sistem Absensi Siswa</h1>
-                <p className="text-sm text-gray-500 mb-6">Masuk untuk melanjutkan</p>
+        <div className="min-h-screen flex items-center justify-center bg-[#F5F7FA]" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-sm border border-[#E5E7EB]">
+                <div className="flex flex-col items-center text-center mb-6">
+                    <div className="w-12 h-12 rounded-lg bg-[#1E3A5F] text-white flex items-center justify-center shadow-sm mb-3">
+                        <GraduationCap size={24} />
+                    </div>
+                    <h1 className="text-xl font-semibold text-[#1E3A5F] leading-tight">
+                        EduAttend Pro
+                    </h1>
+                    <p className="text-[11px] text-[#6B7280] font-medium leading-tight">
+                        Sistem Absensi Siswa
+                    </p>
+                </div>
+
+                <h2 className="text-lg font-semibold text-[#1F2937] mb-1">
+                    Masuk ke Akun Anda
+                </h2>
+                <p className="text-sm text-[#6B7280] mb-6">
+                    Masukkan kredensial Anda untuk melanjutkan
+                </p>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <label className="block text-sm font-medium text-[#6B7280] mb-1">
+                            Email
+                        </label>
                         <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg text-sm text-[#1F2937] bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A5F]/30 focus:border-[#1E3A5F] transition-colors"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <label className="block text-sm font-medium text-[#6B7280] mb-1">
+                            Password
+                        </label>
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg text-sm text-[#1F2937] bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A5F]/30 focus:border-[#1E3A5F] transition-colors"
                         />
                     </div>
 
@@ -66,7 +87,7 @@ export default function Login() {
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+                        className="w-full bg-[#1E3A5F] hover:bg-[#16304F] text-white py-2 rounded-lg text-sm font-semibold shadow-sm transition-colors disabled:opacity-50"
                     >
                         {isSubmitting ? 'Memproses...' : 'Masuk'}
                     </button>

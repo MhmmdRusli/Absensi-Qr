@@ -8,7 +8,6 @@ import {
     Menu,
     X,
     Bell,
-    ChevronRight,
     ChevronDown,
     CalendarDays,
     GraduationCap,
@@ -176,8 +175,6 @@ export default function StudentLayouts() {
                         >
                             <Menu size={20} />
                         </button>
-                        <span className="text-[13px] hidden sm:inline">Beranda</span>
-                        <ChevronRight size={14} className="hidden sm:inline" />
                         <span className="text-[13px] font-semibold text-[#1F2937]">{currentLabel}</span>
                     </div>
 
