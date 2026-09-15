@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\ClassRoom;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ClassRoomExport;
+use App\Exports\TemplateExport;
+use App\Imports\ClassRoomImport;
+use Throwable;
 
 class ClassRoomController extends Controller
 {
@@ -107,35 +112,54 @@ class ClassRoomController extends Controller
             ->orderBy('name')
             ->get()
             ->map(fn ($c) => [
-                'nama_kelas' => $c->name,
-                'tingkat' => $c->tingkat,
-                'jurusan' => $c->jurusan,
-                'wali_kelas' => $c->wali_kelas,
-                'status' => $c->status,
-                'total_siswa' => $c->students_count,
-            ]);
+                'nama_kelas'   => $c->name,
+                'tingkat'      => $c->tingkat,
+                'jurusan'      => $c->jurusan,
+                'wali_kelas'   => $c->wali_kelas,
+                'status'       => $c->status,
+                'total_siswa'  => $c->students_count,
+            ])
+            ->toArray();
 
-        $filename = 'data-kelas-' . now()->format('Y-m-d-His') . '.csv';
+        $filename = 'data-kelas-' . now()->format('Y-m-d-His') . '.xlsx';
 
-        return response()->streamDownload(function () use ($classes) {
-            $handle = fopen('php://output', 'w');
+        return Excel::download(new ClassRoomExport($classes), $filename);
+    }
 
-            fputcsv($handle, ['Nama Kelas', 'Tingkat', 'Jurusan', 'Wali Kelas', 'Status', 'Total Siswa']);
+    public function import(Request $request)
+    {
+        $request->validate(['file' => 'required|file|mimes:xlsx,xls,csv|max:5120']);
 
-            foreach ($classes as $c) {
-                fputcsv($handle, [
-                    $c['nama_kelas'],
-                    $c['tingkat'],
-                    $c['jurusan'],
-                    $c['wali_kelas'],
-                    $c['status'],
-                    $c['total_siswa'],
-                ]);
-            }
+        try {
+            $import = new ClassRoomImport();
+            Excel::import($import, $request->file('file')->getRealPath());
+        } catch (Throwable $e) {
+            return response()->json(['message' => 'Gagal membaca file: ' . $e->getMessage()], 422);
+        }
 
-            fclose($handle);
-        }, $filename, [
-            'Content-Type' => 'text/csv',
+        if ($import->failures()->isNotEmpty()) {
+            return response()->json([
+                'message' => 'Import selesai dengan beberapa kesalahan.',
+                'imported' => $import->imported,
+                'errors' => $import->failures()->map(fn ($f) => [
+                    'row' => $f->row(),
+                    'attribute' => $f->attribute(),
+                    'errors' => $f->errors(),
+                ])->values()->toArray(),
+            ], 422);
+        }
+
+        return response()->json([
+            'message' => "Berhasil mengimpor {$import->imported} data kelas.",
+            'imported' => $import->imported,
         ]);
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new TemplateExport(
+            ['Nama Kelas', 'Tingkat', 'Jurusan', 'Wali Kelas', 'Status'],
+            ['XII PPLG 1', 'XII', 'PPLG', 'Pak Ahmad', 'aktif']
+        ), 'template-import-kelas.xlsx');
     }
 }

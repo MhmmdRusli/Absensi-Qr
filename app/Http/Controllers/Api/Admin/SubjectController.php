@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SubjectExport;
+use App\Exports\TemplateExport;
+use App\Imports\SubjectImport;
+use Throwable;
 
 class SubjectController extends Controller
 {
@@ -74,27 +79,54 @@ class SubjectController extends Controller
 
     public function export()
     {
-        $subjects = Subject::orderBy('name')->get(['id', 'name', 'tingkat', 'guru_pengampu', 'status']);
+        $rows = Subject::orderBy('name')->get(['name', 'tingkat', 'guru_pengampu', 'status'])
+            ->map(fn ($s) => [
+                'nama_mata_pelajaran' => $s->name,
+                'tingkat'             => $s->tingkat,
+                'guru_pengampu'       => $s->guru_pengampu,
+                'status'              => $s->status,
+            ])
+            ->toArray();
 
-        $filename = 'data-mata-pelajaran-' . now()->format('Y-m-d-His') . '.csv';
+        $filename = 'data-mata-pelajaran-' . now()->format('Y-m-d-His') . '.xlsx';
 
-        return response()->streamDownload(function () use ($subjects) {
-            $handle = fopen('php://output', 'w');
+        return Excel::download(new SubjectExport($rows), $filename);
+    }
 
-            fputcsv($handle, ['Nama Mata Pelajaran', 'Tingkat', 'Guru Pengampu', 'Status']);
+    public function import(Request $request)
+    {
+        $request->validate(['file' => 'required|file|mimes:xlsx,xls,csv|max:5120']);
 
-            foreach ($subjects as $s) {
-                fputcsv($handle, [
-                    $s->name,
-                    $s->tingkat,
-                    $s->guru_pengampu,
-                    $s->status,
-                ]);
-            }
+        try {
+            $import = new SubjectImport();
+            Excel::import($import, $request->file('file')->getRealPath());
+        } catch (Throwable $e) {
+            return response()->json(['message' => 'Gagal membaca file: ' . $e->getMessage()], 422);
+        }
 
-            fclose($handle);
-        }, $filename, [
-            'Content-Type' => 'text/csv',
+        if ($import->failures()->isNotEmpty()) {
+            return response()->json([
+                'message' => 'Import selesai dengan beberapa kesalahan.',
+                'imported' => $import->imported,
+                'errors' => $import->failures()->map(fn ($f) => [
+                    'row' => $f->row(),
+                    'attribute' => $f->attribute(),
+                    'errors' => $f->errors(),
+                ])->values()->toArray(),
+            ], 422);
+        }
+
+        return response()->json([
+            'message' => "Berhasil mengimpor {$import->imported} data mata pelajaran.",
+            'imported' => $import->imported,
         ]);
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new TemplateExport(
+            ['Nama Mata Pelajaran', 'Tingkat', 'Guru Pengampu', 'Status'],
+            ['Fisika', 'XII', 'Pak Ahmad', 'aktif']
+        ), 'template-import-mata-pelajaran.xlsx');
     }
 }

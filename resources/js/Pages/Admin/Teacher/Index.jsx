@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import api from '../../../Lib/axios';
 import Modal from '../../../Components/Modal';
+import BulkImportModal from '../../../Components/BulkImportModal';
 import {
-    Search, RotateCcw, Download, Eye, Pencil, Trash2, Plus,
+    Search, RotateCcw, Download, Eye, Pencil, Trash2, Plus, Upload,
     IdCard, CheckCircle2, PauseCircle, ChevronLeft, ChevronRight,
     UserSearch, TriangleAlert, ChevronDown, X,
 } from 'lucide-react';
@@ -41,6 +42,7 @@ export default function TeacherIndex() {
 
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [detailTarget, setDetailTarget] = useState(null);
+    const [isImportOpen, setIsImportOpen] = useState(false);
 
     const fetchTeachers = async () => {
         try {
@@ -280,6 +282,16 @@ export default function TeacherIndex() {
                         <span>Reset</span>
                     </button>
                     <button
+                        onClick={() => setIsImportOpen(true)}
+                        className="h-9 px-3 rounded-lg text-white text-sm font-medium flex items-center gap-1.5 transition-colors shadow-sm"
+                        style={{ background: NAVY }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = NAVY_HOVER)}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = NAVY)}
+                    >
+                        <Upload size={14} />
+                        <span>Import</span>
+                    </button>
+                    <button
                         onClick={async () => {
                             try {
                                 const response = await api.get('/admin/teachers/export', {
@@ -444,6 +456,24 @@ export default function TeacherIndex() {
                     </div>
                 )}
             </div>
+
+            <BulkImportModal
+                isOpen={isImportOpen}
+                onClose={() => setIsImportOpen(false)}
+                title="Import Guru / Staff"
+                templateUrl="/admin/teachers/import/template"
+                importUrl="/admin/teachers/import"
+                templateFilename="template-import-guru.xlsx"
+                columns={[
+                    { label: 'NIP', example: '1234567890' },
+                    { label: 'Nama', example: 'Nama Guru' },
+                    { label: 'Email', example: 'guru@example.com' },
+                    { label: 'Jabatan', example: 'guru' },
+                    { label: 'Mata Pelajaran', example: 'Bahasa Inggris' },
+                    { label: 'Status', example: 'aktif' },
+                ]}
+                onImported={() => fetchTeachers()}
+            />
 
             <Modal
                 isOpen={isModalOpen}
@@ -629,10 +659,11 @@ export default function TeacherIndex() {
                             >
                                 Hapus Data
                             </button>
-                        </div>
+</div>
                     </div>
                 </div>
             )}
+
         </div>
     );
 }

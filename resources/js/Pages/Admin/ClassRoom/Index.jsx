@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import api from '../../../Lib/axios';
 import Modal from '../../../Components/Modal';
+import BulkImportModal from '../../../Components/BulkImportModal';
 import {
-    Search, RotateCcw, Download, Eye, Pencil, Trash2, Plus,
+    Search, RotateCcw, Download, Eye, Pencil, Trash2, Plus, Upload,
     DoorOpen, CheckCircle2, Users, ChevronLeft, ChevronRight,
     FolderOpen, TriangleAlert, ChevronDown, X,
 } from 'lucide-react';
@@ -32,6 +33,7 @@ export default function ClassRoomIndex() {
     const [deleteError, setDeleteError] = useState('');
     const [detailTarget, setDetailTarget] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    const [isImportOpen, setIsImportOpen] = useState(false);
 
     const fetchClasses = async () => {
         try {
@@ -289,13 +291,23 @@ export default function ClassRoomIndex() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+<div className="flex items-center gap-2">
                     <button
                         onClick={() => { setSearch(''); setTingkatFilter(''); setJurusanFilter(''); setStatusFilter(''); }}
                         className="h-9 px-3 rounded-lg border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#6B7280] text-sm flex items-center gap-1.5 transition-colors"
                     >
                         <RotateCcw size={14} />
                         <span>Reset</span>
+                    </button>
+                    <button
+                        onClick={() => setIsImportOpen(true)}
+                        className="h-9 px-3 rounded-lg text-white text-sm font-medium flex items-center gap-1.5 transition-colors shadow-sm"
+                        style={{ background: NAVY }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = NAVY_HOVER)}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = NAVY)}
+                    >
+                        <Upload size={14} />
+                        <span>Import</span>
                     </button>
                         <button
                             onClick={async () => {
@@ -614,6 +626,23 @@ export default function ClassRoomIndex() {
                     </div>
                 </div>
             )}
+
+            <BulkImportModal
+                isOpen={isImportOpen}
+                onClose={() => setIsImportOpen(false)}
+                title="Import Kelas"
+                templateUrl="/admin/classes/import/template"
+                importUrl="/admin/classes/import"
+                templateFilename="template-import-kelas.xlsx"
+                columns={[
+                    { label: 'Nama Kelas', example: 'XII PPLG 1' },
+                    { label: 'Tingkat', example: 'XII' },
+                    { label: 'Jurusan', example: 'PPLG' },
+                    { label: 'Wali Kelas', example: 'Pak Ahmad' },
+                    { label: 'Status', example: 'aktif' },
+                ]}
+                onImported={() => fetchClasses()}
+            />
         </div>
     );
 }

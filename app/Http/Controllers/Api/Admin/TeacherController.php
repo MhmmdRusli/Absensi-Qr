@@ -9,6 +9,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\TeacherExport;
+use App\Exports\TemplateExport;
+use App\Imports\TeacherImport;
+use Throwable;
 
 class TeacherController extends Controller
 {
@@ -110,30 +115,49 @@ class TeacherController extends Controller
                 'jabatan' => $this->positionLabel($t->position),
                 'mata_pelajaran' => $t->teaching_subject ?? '-',
                 'status' => $t->status ?? 'aktif',
-            ]);
+            ])
+            ->toArray();
 
-        $filename = 'data-guru-' . now()->format('Y-m-d-His') . '.csv';
+        $filename = 'data-guru-' . now()->format('Y-m-d-His') . '.xlsx';
 
-        return response()->streamDownload(function () use ($teachers) {
-            $handle = fopen('php://output', 'w');
+        return Excel::download(new TeacherExport($teachers), $filename);
+    }
 
-            fputcsv($handle, ['NIP', 'Nama', 'Email', 'Jabatan', 'Mata Pelajaran', 'Status']);
+    public function import(Request $request)
+    {
+        $request->validate(['file' => 'required|file|mimes:xlsx,xls,csv|max:5120']);
 
-            foreach ($teachers as $t) {
-                fputcsv($handle, [
-                    $t['nip'],
-                    $t['nama'],
-                    $t['email'],
-                    $t['jabatan'],
-                    $t['mata_pelajaran'],
-                    $t['status'],
-                ]);
-            }
+        try {
+            $import = new TeacherImport();
+            Excel::import($import, $request->file('file')->getRealPath());
+        } catch (Throwable $e) {
+            return response()->json(['message' => 'Gagal membaca file: ' . $e->getMessage()], 422);
+        }
 
-            fclose($handle);
-        }, $filename, [
-            'Content-Type' => 'text/csv',
+        if ($import->failures()->isNotEmpty()) {
+            return response()->json([
+                'message' => 'Import selesai dengan beberapa kesalahan.',
+                'imported' => $import->imported,
+                'errors' => $import->failures()->map(fn ($f) => [
+                    'row' => $f->row(),
+                    'attribute' => $f->attribute(),
+                    'errors' => $f->errors(),
+                ])->values()->toArray(),
+            ], 422);
+        }
+
+        return response()->json([
+            'message' => "Berhasil mengimpor {$import->imported} data guru.",
+            'imported' => $import->imported,
         ]);
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new TemplateExport(
+            ['NIP', 'Nama', 'Email', 'Jabatan', 'Mata Pelajaran', 'Status'],
+            ['1234567890', 'Contoh Nama Guru', 'guru@example.com', 'guru', 'Bahasa Inggris', 'aktif']
+        ), 'template-import-guru.xlsx');
     }
 
     private function positionLabel($position)

@@ -37,14 +37,22 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/reports/export/excel', [ReportController::class, 'exportExcel']);
         Route::apiResource('students', StudentController::class)->except(['show']);
         Route::get('/students/export', [StudentController::class, 'export']);
+        Route::get('/students/import/template', [StudentController::class, 'downloadTemplate']);
+        Route::post('/students/import', [StudentController::class, 'import']);
         Route::apiResource('teachers', TeacherController::class)->except(['show']);
         Route::get('/teachers/export', [TeacherController::class, 'export']);
+        Route::get('/teachers/import/template', [TeacherController::class, 'downloadTemplate']);
+        Route::post('/teachers/import', [TeacherController::class, 'import']);
         Route::apiResource('classes', ClassRoomController::class)
             ->except(['show'])
             ->parameters(['classes' => 'classRoom']);
         Route::get('/classes/export', [ClassRoomController::class, 'export']);
+        Route::get('/classes/import/template', [ClassRoomController::class, 'downloadTemplate']);
+        Route::post('/classes/import', [ClassRoomController::class, 'import']);
         Route::apiResource('subjects', SubjectController::class)->except(['show']);
         Route::get('/subjects/export', [SubjectController::class, 'export']);
+        Route::get('/subjects/import/template', [SubjectController::class, 'downloadTemplate']);
+        Route::post('/subjects/import', [SubjectController::class, 'import']);
     });
 
     Route::middleware('role:teacher')->prefix('teacher')->group(function () {

@@ -9,6 +9,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\StudentExport;
+use App\Exports\TemplateExport;
+use App\Imports\StudentImport;
+use Throwable;
 
 class StudentController extends Controller
 {
@@ -112,28 +117,46 @@ class StudentController extends Controller
                 'status' => $s->status ?? 'aktif',
             ]);
 
-        $filename = 'data-siswa-' . now()->format('Y-m-d-His') . '.csv';
+        $filename = 'data-siswa-' . now()->format('Y-m-d-His') . '.xlsx';
 
-        return response()->streamDownload(function () use ($students) {
-            $handle = fopen('php://output', 'w');
+        return Excel::download(new StudentExport($students->toArray()), $filename);
+    }
 
-            fputcsv($handle, ['NIS', 'Nama', 'Email', 'Jenis Kelamin', 'Kelas', 'Status']);
+    public function import(Request $request)
+    {
+        $request->validate(['file' => 'required|file|mimes:xlsx,xls,csv|max:5120']);
 
-            foreach ($students as $s) {
-                fputcsv($handle, [
-                    $s['nis'],
-                    $s['nama'],
-                    $s['email'],
-                    $s['jenis_kelamin'],
-                    $s['kelas'],
-                    $s['status'],
-                ]);
-            }
+        try {
+            $import = new StudentImport();
+            Excel::import($import, $request->file('file')->getRealPath());
+        } catch (Throwable $e) {
+            return response()->json(['message' => 'Gagal membaca file: ' . $e->getMessage()], 422);
+        }
 
-            fclose($handle);
-        }, $filename, [
-            'Content-Type' => 'text/csv',
+        if ($import->failures()->isNotEmpty()) {
+            return response()->json([
+                'message' => 'Import selesai dengan beberapa kesalahan.',
+                'imported' => $import->imported,
+                'errors' => $import->failures()->map(fn ($f) => [
+                    'row' => $f->row(),
+                    'attribute' => $f->attribute(),
+                    'errors' => $f->errors(),
+                ])->values()->toArray(),
+            ], 422);
+        }
+
+        return response()->json([
+            'message' => "Berhasil mengimpor {$import->imported} data siswa.",
+            'imported' => $import->imported,
         ]);
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new TemplateExport(
+            ['NIS', 'Nama', 'Email', 'Jenis Kelamin', 'Kelas', 'Status'],
+            ['12345', 'Contoh Nama Siswa', 'siswa@example.com', 'laki-laki', 'XII PPLG 1', 'aktif']
+        ), 'template-import-siswa.xlsx');
     }
 
     private function formatStudent(Student $student): array

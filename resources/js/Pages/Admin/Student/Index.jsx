@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import api from '../../../Lib/axios';
 import Modal from '../../../Components/Modal';
+import BulkImportModal from '../../../Components/BulkImportModal';
 import {
-    Search, RotateCcw, Download, Eye, Pencil, Trash2, Plus,
+    Search, RotateCcw, Download, Eye, Pencil, Trash2, Plus, Upload,
     GraduationCap, CheckCircle2, XCircle, ChevronLeft, ChevronRight,
     Inbox, TriangleAlert, ChevronDown,
 } from 'lucide-react';
@@ -31,6 +32,7 @@ export default function StudentIndex() {
     const [page, setPage] = useState(1);
 
     const [deleteTarget, setDeleteTarget] = useState(null);
+    const [isImportOpen, setIsImportOpen] = useState(false);
 
     const fetchStudents = async () => {
         try {
@@ -297,6 +299,17 @@ export default function StudentIndex() {
                         </button>
 
                         <button
+                            onClick={() => setIsImportOpen(true)}
+                            className="h-9 px-3 rounded-lg text-white text-sm font-medium flex items-center gap-1.5 transition-colors shadow-sm"
+                            style={{ background: NAVY }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = NAVY_HOVER)}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = NAVY)}
+                        >
+                            <Upload size={14} />
+                            <span>Import</span>
+                        </button>
+
+                        <button
                             onClick={async () => {
                                 try {
                                     const response = await api.get('/admin/students/export', {
@@ -305,7 +318,7 @@ export default function StudentIndex() {
                                     const url = window.URL.createObjectURL(new Blob([response.data]));
                                     const link = document.createElement('a');
                                     link.href = url;
-                                    link.setAttribute('download', 'data-siswa.csv');
+                                    link.setAttribute('download', 'data-siswa.xlsx');
                                     document.body.appendChild(link);
                                     link.click();
                                     link.remove();
@@ -461,6 +474,24 @@ export default function StudentIndex() {
                     </div>
                 )}
             </div>
+
+            <BulkImportModal
+                isOpen={isImportOpen}
+                onClose={() => setIsImportOpen(false)}
+                title="Import Siswa"
+                templateUrl="/admin/students/import/template"
+                importUrl="/admin/students/import"
+                templateFilename="template-import-siswa.xlsx"
+                columns={[
+                    { label: 'NIS', example: '12345' },
+                    { label: 'Nama', example: 'Nama Siswa' },
+                    { label: 'Email', example: 'siswa@example.com' },
+                    { label: 'Jenis Kelamin', example: 'laki-laki' },
+                    { label: 'Kelas', example: 'XII PPLG 1' },
+                    { label: 'Status', example: 'aktif' },
+                ]}
+                onImported={() => fetchStudents()}
+            />
 
             <Modal
                 isOpen={isModalOpen}
