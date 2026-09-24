@@ -52,22 +52,16 @@ export default function ProfileIndex() {
     }
 
     return (
-        <div className="max-w-lg mx-auto">
-            {notice && (
-                <div className="bg-emerald-50 text-emerald-700 text-sm px-4 py-2 rounded-lg border border-emerald-200 mb-6">
-                    {notice}
-                </div>
-            )}
-
-            <div className="bg-white border border-[#E5E7EB] rounded-xl shadow-sm overflow-hidden">
-                <div className="bg-[#1E3A5F] px-6 py-5 flex items-center justify-between">
+        <div className="mx-auto flex max-w-lg flex-col gap-6">
+            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-[#0f2942] via-[#173d62] to-[#1f4c7a] p-6 text-white shadow-xl">
+                <div className="flex items-center justify-between gap-4">
                     <div>
-                        <h2 className="text-white text-base font-semibold">Profil Saya</h2>
-                        <p className="text-[#DEE9FC] text-xs mt-1">
-                            Kelola informasi profil Anda
-                        </p>
+                        <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-sky-100">
+                            profil
+                        </span>
+                        <h2 className="mt-4 text-3xl font-bold tracking-tight text-white">Profil Saya</h2>
                     </div>
-                    <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white font-bold text-sm">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/10 text-lg font-bold text-white">
                         {form.name
                             ?.split(' ')
                             .map((s) => s[0])
@@ -76,52 +70,55 @@ export default function ProfileIndex() {
                             .toUpperCase()}
                     </div>
                 </div>
+            </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            {notice && (
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
+                    {notice}
+                </div>
+            )}
+
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <form onSubmit={handleSubmit} className="space-y-5 p-6">
                     <div>
-                        <label className="block text-sm font-medium text-[#1F2937] mb-1.5">Nama</label>
+                        <label className="mb-1.5 block text-sm font-medium text-slate-700">Nama</label>
                         <input
                             type="text"
                             value={form.name}
                             onChange={(e) => setForm({ ...form, name: e.target.value })}
                             placeholder="Masukkan nama"
-                            className="w-full h-9 px-3 text-sm border border-[#E5E7EB] rounded-lg text-[#1F2937] focus:outline-none focus:ring-1"
+                            className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100"
                         />
-                        {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name[0]}</p>}
+                        {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name[0]}</p>}
                     </div>
+
                     <div>
-                        <label className="block text-sm font-medium text-[#1F2937] mb-1.5">Email</label>
+                        <label className="mb-1.5 block text-sm font-medium text-slate-700">Email</label>
                         <input
                             type="email"
                             value={form.email}
                             onChange={(e) => setForm({ ...form, email: e.target.value })}
                             placeholder="Masukkan email"
-                            className="w-full h-9 px-3 text-sm border border-[#E5E7EB] rounded-lg text-[#1F2937] focus:outline-none focus:ring-1"
+                            className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100"
                         />
-                        {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email[0]}</p>}
+                        {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email[0]}</p>}
                     </div>
-                    <div className="flex items-center gap-2 pt-2">
-                        <button
-                            type="submit"
-                            disabled={submitting}
-                            className="px-4 py-2 rounded-lg text-white text-sm font-medium flex items-center gap-2 transition-colors disabled:opacity-70"
-                            style={{ background: '#1E3A5F' }}
-                        >
-                            {submitting ? 'Menyimpan...' : 'Simpan'}
-                        </button>
-                    </div>
+
+                    <button
+                        type="submit"
+                        disabled={submitting}
+                        className="inline-flex items-center justify-center rounded-xl bg-[#0f2942] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#173d62] disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                        {submitting ? 'Menyimpan...' : 'Simpan'}
+                    </button>
                 </form>
             </div>
 
-            <div className="mt-6 bg-white border border-[#E5E7EB] rounded-xl p-4">
-                <h3 className="text-sm font-semibold text-[#1F2937] mb-3">Informasi Akun</h3>
-                <div className="space-y-2 text-xs text-[#6B7280]">
-                    <p>
-                        <span className="font-medium text-[#1F2937]">Peran:</span> Administrator
-                    </p>
-                    <p>
-                        <span className="font-medium text-[#1F2937]">Terakhir login:</span> {new Date().toLocaleString('id-ID')}
-                    </p>
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                <h3 className="mb-3 text-sm font-semibold text-slate-900">Informasi Akun</h3>
+                <div className="space-y-2 text-xs text-slate-600">
+                    <p><span className="font-medium text-slate-800">Peran:</span> Administrator</p>
+                    <p><span className="font-medium text-slate-800">Terakhir login:</span> {new Date().toLocaleString('id-ID')}</p>
                 </div>
             </div>
         </div>

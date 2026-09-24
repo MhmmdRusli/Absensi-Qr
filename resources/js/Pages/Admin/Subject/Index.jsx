@@ -166,58 +166,62 @@ export default function SubjectIndex() {
     }, [subjects]);
 
     return (
-        <div className="max-w-7xl mx-auto flex flex-col gap-6">
-            {/* HEADER */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-semibold text-[#1F2937]">Mata Pelajaran</h1>
-                    <p className="text-sm text-[#6B7280] mt-0.5">
-                        Kelola data mata pelajaran yang digunakan dalam sistem.
-                    </p>
+        <div className="mx-auto flex max-w-7xl flex-col gap-6">
+            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-[#0f2942] via-[#173d62] to-[#1f4c7a] p-6 text-white shadow-xl">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                    <div>
+                        <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-sky-100">
+                            master data
+                        </span>
+                        <h1 className="mt-4 text-3xl font-bold tracking-tight text-white">Mata Pelajaran</h1>
+                        <p className="mt-2 max-w-xl text-sm text-slate-200">
+                            Kelola kurikulum sekolah, tingkat kelas, serta pengampu mata pelajaran dengan tampilan yang lebih rapi.
+                        </p>
+                    </div>
+                    <button
+                        onClick={openCreateModal}
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-slate-100"
+                    >
+                        <Plus size={16} />
+                        <span>Tambah Mata Pelajaran</span>
+                    </button>
                 </div>
-                <button
-                    onClick={openCreateModal}
-                    className="px-4 py-2 rounded-lg text-white text-sm font-medium flex items-center gap-2 transition-colors shadow-sm"
-                    style={{ background: NAVY }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = NAVY_HOVER)}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = NAVY)}
-                >
-                    <Plus size={16} />
-                    <span>Tambah Mata Pelajaran</span>
-                </button>
             </div>
 
             {notice && (
-                <div className="bg-emerald-50 text-emerald-700 text-sm px-4 py-2 rounded-lg border border-emerald-200">
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
                     {notice}
                 </div>
             )}
 
-            {/* KPI CARDS */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white border border-[#E5E7EB] rounded-xl p-4 flex items-center justify-between shadow-sm">
-                    <div className="flex flex-col">
-                        <span className="text-xs font-semibold text-[#6B7280] uppercase tracking-wide">Total Mata Pelajaran</span>
-                        <span className="text-2xl font-semibold text-[#1F2937] mt-1">{subjects.length}</span>
-                        <span className="text-xs text-[#6B7280] mt-2">Terdaftar di kurikulum</span>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Total Mata Pelajaran</p>
+                            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{subjects.length}</p>
+                        </div>
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-50 text-sky-700">
+                            <BookOpen size={22} />
+                        </div>
                     </div>
-                    <div className="w-11 h-11 rounded-lg flex items-center justify-center" style={{ background: '#EFF4FF', color: NAVY }}>
-                        <BookOpen size={22} />
-                    </div>
+                    <p className="mt-4 text-xs text-slate-500">Terdaftar di kurikulum</p>
                 </div>
 
-                <div className="bg-white border border-[#E5E7EB] rounded-xl p-4 flex items-center justify-between shadow-sm">
-                    <div className="flex flex-col">
-                        <span className="text-xs font-semibold text-[#6B7280] uppercase tracking-wide">Mata Pelajaran Aktif</span>
-                        <span className="text-2xl font-semibold text-[#1F2937] mt-1">–</span>
-                        <span className="text-xs text-[#6B7280] mt-2">Menunggu field status</span>
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Mata Pelajaran Aktif</p>
+                            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{subjects.filter((s) => (s.status || 'aktif') === 'aktif').length}</p>
+                        </div>
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                            <CheckCircle2 size={22} />
+                        </div>
                     </div>
-                    <div className="w-11 h-11 rounded-lg flex items-center justify-center bg-emerald-50 text-emerald-600 border border-emerald-200">
-                        <CheckCircle2 size={22} />
-                    </div>
+                    <p className="mt-4 text-xs text-slate-500">Aktif dalam pembelajaran</p>
                 </div>
 
-                <div className="bg-white border border-[#E5E7EB] rounded-xl p-4 flex items-center justify-between shadow-sm">
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                     <div className="flex flex-col">
                         <span className="text-xs font-semibold text-[#6B7280] uppercase tracking-wide">Mata Pelajaran Nonaktif</span>
                         <span className="text-2xl font-semibold text-[#1F2937] mt-1">–</span>

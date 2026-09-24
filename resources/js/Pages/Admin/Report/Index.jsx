@@ -168,52 +168,60 @@ export default function ReportIndex() {
     const initials = (name) => name.split(' ').map((s) => s[0]).slice(0, 2).join('').toUpperCase();
 
     return (
-        <div className="max-w-[1600px] mx-auto flex flex-col gap-6">
-            {/* HEADER */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-semibold text-[#1F2937]">Laporan Absensi</h1>
-                    <p className="text-sm text-[#6B7280] mt-0.5">
-                        Pantau dan analisis rekap kehadiran siswa berdasarkan periode, kelas, dan mata pelajaran.
-                    </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                    <button
-                        onClick={() => { const p = new URLSearchParams(filters).toString(); window.location.href = `/api/admin/reports/export/pdf?${p}`; }}
-                        className="h-9 px-3 border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] rounded-lg text-sm flex items-center gap-1.5 transition-colors"
-                    >
-                        <FileText size={16} className="text-red-500" />
-                        <span>PDF</span>
-                    </button>
-                    <button
-                        onClick={() => { const p = new URLSearchParams(filters).toString(); window.location.href = `/api/admin/reports/export/excel?${p}`; }}
-                        className="h-9 px-3 border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] rounded-lg text-sm flex items-center gap-1.5 transition-colors"
-                    >
-                        <FileSpreadsheet size={16} className="text-emerald-500" />
-                        <span>Excel</span>
-                    </button>
-                    <button
-                        onClick={() => window.print()}
-                        className="h-9 px-3 border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] rounded-lg text-sm flex items-center gap-1.5 transition-colors"
-                    >
-                        <Printer size={16} />
-                        <span>Cetak</span>
-                    </button>
-                    <button
-                        onClick={() => setExportModalOpen(true)}
-                        className="h-9 px-4 text-white rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm"
-                        style={{ background: NAVY }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = NAVY_HOVER)}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = NAVY)}
-                    >
-                        <Download size={16} />
-                        <span>Export Laporan</span>
-                    </button>
+        <div className="mx-auto flex max-w-[1600px] flex-col gap-6">
+            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-[#0f2942] via-[#173d62] to-[#1f4c7a] p-6 text-white shadow-xl">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                    <div>
+                        <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-sky-100">
+                            laporan
+                        </span>
+                        <h1 className="mt-4 text-3xl font-bold tracking-tight text-white">Laporan Absensi</h1>
+                        <p className="mt-2 max-w-xl text-sm text-slate-200">
+                            Pantau dan analisis rekap kehadiran siswa berdasarkan periode, kelas, dan mata pelajaran.
+                        </p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <button
+                            onClick={() => { const p = new URLSearchParams(filters).toString(); window.location.href = `/api/admin/reports/export/pdf?${p}`; }}
+                            className="h-9 rounded-lg border border-white/15 bg-white/10 px-3 text-sm text-white transition hover:bg-white/15"
+                        >
+                            <span className="flex items-center gap-1.5">
+                                <FileText size={16} className="text-red-300" />
+                                PDF
+                            </span>
+                        </button>
+                        <button
+                            onClick={() => { const p = new URLSearchParams(filters).toString(); window.location.href = `/api/admin/reports/export/excel?${p}`; }}
+                            className="h-9 rounded-lg border border-white/15 bg-white/10 px-3 text-sm text-white transition hover:bg-white/15"
+                        >
+                            <span className="flex items-center gap-1.5">
+                                <FileSpreadsheet size={16} className="text-emerald-300" />
+                                Excel
+                            </span>
+                        </button>
+                        <button
+                            onClick={() => window.print()}
+                            className="h-9 rounded-lg border border-white/15 bg-white/10 px-3 text-sm text-white transition hover:bg-white/15"
+                        >
+                            <span className="flex items-center gap-1.5">
+                                <Printer size={16} />
+                                Cetak
+                            </span>
+                        </button>
+                        <button
+                            onClick={() => setExportModalOpen(true)}
+                            className="h-9 rounded-lg bg-white px-4 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-slate-100"
+                        >
+                            <span className="flex items-center gap-2">
+                                <Download size={16} />
+                                Export Laporan
+                            </span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {/* FILTER PANEL */}
-            <div className="bg-white border border-[#E5E7EB] rounded-xl p-4 space-y-4">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 border-b border-[#E5E7EB]">
                     <div className="flex items-center gap-2 text-sm text-[#1F2937]">
                         <Filter size={16} className="text-[#9CA3AF]" />
