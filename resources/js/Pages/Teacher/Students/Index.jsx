@@ -86,37 +86,37 @@ export default function TeacherStudentsIndex() {
 
             {/* KPI CARDS */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white border border-[#E5E7EB] rounded-lg p-4">
+                <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center justify-between">
                         <span className="text-[11px] uppercase tracking-wide text-[#6B7280]">Total Siswa Diampu</span>
-                        <div className="w-8 h-8 rounded bg-[#F5F7FA] text-[#1E3A5F] flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-xl bg-[#F5F7FA] text-[#1E3A5F] flex items-center justify-center">
                             <Users size={16} />
                         </div>
                     </div>
                     <p className="text-2xl font-bold text-[#1F2937] mt-2">{summary.totalSiswa} <span className="text-sm font-normal text-[#6B7280]">Siswa</span></p>
                 </div>
-                <div className="bg-white border border-[#E5E7EB] rounded-lg p-4">
+                <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center justify-between">
                         <span className="text-[11px] uppercase tracking-wide text-[#6B7280]">Rata-rata Kehadiran</span>
-                        <div className="w-8 h-8 rounded bg-[#F5F7FA] text-[#1E3A5F] flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-xl bg-[#F5F7FA] text-[#1E3A5F] flex items-center justify-center">
                             <TrendingUp size={16} />
                         </div>
                     </div>
                     <p className="text-2xl font-bold text-[#1E3A5F] mt-2">{summary.rataKehadiran.toFixed(1)}%</p>
                 </div>
-                <div className="bg-white border border-[#E5E7EB] rounded-lg p-4">
+                <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center justify-between">
                         <span className="text-[11px] uppercase tracking-wide text-[#6B7280]">Perlu Perhatian Khusus</span>
-                        <div className="w-8 h-8 rounded bg-[#F5F7FA] text-[#1E3A5F] flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-xl bg-[#F5F7FA] text-[#1E3A5F] flex items-center justify-center">
                             <AlertTriangle size={16} />
                         </div>
                     </div>
                     <p className="text-2xl font-bold text-[#1F2937] mt-2">{summary.perluPerhatian} <span className="text-sm font-normal text-[#6B7280]">Siswa</span></p>
                 </div>
-                <div className="bg-white border border-[#E5E7EB] rounded-lg p-4">
+                <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center justify-between">
                         <span className="text-[11px] uppercase tracking-wide text-[#6B7280]">Total Sesi Diselenggarakan</span>
-                        <div className="w-8 h-8 rounded bg-[#F5F7FA] text-[#1E3A5F] flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-xl bg-[#F5F7FA] text-[#1E3A5F] flex items-center justify-center">
                             <CalendarCheck size={16} />
                         </div>
                     </div>
@@ -125,7 +125,7 @@ export default function TeacherStudentsIndex() {
             </div>
 
             {/* FILTER TOOLBAR */}
-            <div className="bg-white border border-[#E5E7EB] rounded-lg p-3">
+            <div className="bg-white border border-[#E5E7EB] rounded-xl p-3">
                 <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2">
                     <div className="relative flex-1 min-w-[240px]">
                         <Search size={16} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
@@ -134,21 +134,21 @@ export default function TeacherStudentsIndex() {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Cari nama siswa atau kelas..."
-                            className="w-full h-9 pl-8 pr-3 text-xs bg-white border border-[#E5E7EB] rounded text-[#1F2937] focus:outline-none focus:border-[#1E3A5F]"
+                            className="w-full h-9 pl-8 pr-3 text-xs bg-white border border-[#E5E7EB] rounded-lg text-[#1F2937] focus:outline-none focus:border-[#1E3A5F]"
                         />
                     </div>
                     <div className="flex items-center gap-2">
                         <select
                             value={classFilter}
                             onChange={(e) => setClassFilter(e.target.value)}
-                            className="h-9 px-2.5 pr-8 text-xs bg-white border border-[#E5E7EB] rounded focus:outline-none focus:border-[#1E3A5F]"
+                            className="h-9 px-2.5 pr-8 text-xs bg-white border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#1E3A5F]"
                         >
                             <option value="">Semua Kelas</option>
                             {kelasOptions.map((k) => <option key={k} value={k}>{k}</option>)}
                         </select>
                         <button
                             onClick={resetFilters}
-                            className="h-9 px-3 flex items-center justify-center gap-1 border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#6B7280] rounded text-[11px] font-medium"
+                            className="h-9 px-3 flex items-center justify-center gap-1 border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#6B7280] rounded-lg text-[11px] font-medium"
                         >
                             <RotateCcw size={13} />
                             <span>Reset</span>
@@ -158,7 +158,7 @@ export default function TeacherStudentsIndex() {
             </div>
 
             {/* TABLE */}
-            <div className="bg-white border border-[#E5E7EB] rounded-lg overflow-hidden">
+            <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden">
                 {loading ? (
                     <div className="p-10 text-center text-[#6B7280] text-sm">Memuat data...</div>
                 ) : sorted.length === 0 ? (
@@ -225,14 +225,14 @@ export default function TeacherStudentsIndex() {
                                                     </div>
                                                 </td>
                                                 <td className="py-2.5 px-3 text-center">
-                                                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold border ${badge.cls}`}>
+                                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${badge.cls}`}>
                                                         {badge.label}
                                                     </span>
                                                 </td>
                                                 <td className="py-2.5 px-3 text-right">
                                                     <button
                                                         onClick={() => setDetailStudent(s)}
-                                                        className="px-2.5 py-1 bg-[#F5F7FA] text-[#1E3A5F] hover:bg-[#1E3A5F] hover:text-white rounded text-[11px] font-medium transition-colors"
+                                                        className="px-2.5 py-1 bg-[#F5F7FA] text-[#1E3A5F] hover:bg-[#1E3A5F] hover:text-white rounded-full text-[11px] font-medium transition-colors"
                                                     >
                                                         Detail
                                                     </button>
@@ -282,7 +282,7 @@ export default function TeacherStudentsIndex() {
             {/* MODAL DETAIL SISWA */}
             {detailStudent && (
                 <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={() => setDetailStudent(null)}>
-                    <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-2xl max-w-md w-full p-5" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-2xl max-w-md w-full p-5" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3 mb-4">
                             <h3 className="text-sm font-bold text-[#1F2937]">Rincian {detailStudent.nama}</h3>
                             <button onClick={() => setDetailStudent(null)} className="text-[#9CA3AF] hover:text-[#1F2937]"><Eye size={18} /></button>

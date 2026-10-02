@@ -405,8 +405,8 @@ export default function StudentIndex() {
                                         <td className="py-2.5 px-4 text-[#1F2937] font-medium">{student.class_name}</td>
                                         <td className="py-2.5 px-4 text-center">
                                             {student.status === 'nonaktif' ? (
-                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 border border-gray-200">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-gray-500" />
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#F3F4F6] text-[#374151] border border-[#E5E7EB]">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#6B7280]" />
                                                     Nonaktif
                                                 </span>
                                             ) : (

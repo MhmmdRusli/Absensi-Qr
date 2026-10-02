@@ -130,7 +130,7 @@ export default function TeacherDashboard() {
     return (
         <div className="space-y-5">
             {/* WELCOME */}
-            <div className="bg-white border border-[#E5E7EB] rounded-lg p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
+            <div className="bg-white border border-[#E5E7EB] rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
                 <div>
                     <h1 className="text-xl font-semibold text-[#1E3A5F] tracking-tight">Selamat Datang 👋</h1>
                     <p className="text-sm text-[#6B7280] mt-0.5">
@@ -139,7 +139,7 @@ export default function TeacherDashboard() {
                 </div>
                 <button
                     onClick={() => setShowCreateModal(true)}
-                    className="bg-[#1E3A5F] hover:bg-[#16304F] text-white font-semibold text-sm px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors"
+                    className="bg-[#1E3A5F] hover:bg-[#16304F] text-white font-semibold text-sm px-4 py-2 rounded-xl flex items-center gap-2 shadow-sm transition-colors"
                 >
                     <Plus size={18} />
                     <span>Buat Sesi Absensi</span>
@@ -148,53 +148,62 @@ export default function TeacherDashboard() {
 
             {/* 4 SUMMARY CARDS (real) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white rounded-lg border border-[#E5E7EB] p-4 flex items-center justify-between">
-                    <div>
-                        <p className="text-[11px] text-[#6B7280] uppercase tracking-wide">Sesi Hari Ini</p>
-                        <p className="text-2xl font-semibold text-[#1F2937] mt-1">{todaySessions.length} Sesi</p>
-                        <p className="text-[11px] text-[#9CA3AF] mt-0.5">
-                            {activeSessions.length} aktif, {closedSessions.length} selesai
-                        </p>
-                    </div>
-                    <div className="w-10 h-10 rounded-lg bg-[#F5F7FA] flex items-center justify-center text-[#1E3A5F]">
-                        <CalendarDays size={20} />
+
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Sesi Hari Ini</p>
+                            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{todaySessions.length} Sesi</p>
+                            <p className="mt-3 text-xs text-[#9CA3AF]">
+                                {activeSessions.length} aktif, {closedSessions.length} selesai
+                            </p>
+                        </div>
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F5F7FA] text-[#1E3A5F]">
+                            <CalendarDays size={20} />
+                        </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg border border-[#E5E7EB] p-4 flex items-center justify-between">
-                    <div>
-                        <p className="text-[11px] text-[#6B7280] uppercase tracking-wide">Sesi Aktif</p>
-                        <p className="text-2xl font-semibold text-[#1F2937] mt-1">{stats.sesi_aktif} Sesi</p>
-                    </div>
-                    <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-                        <Radio size={20} />
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-lg border border-[#E5E7EB] p-4 flex items-center justify-between">
-                    <div>
-                        <p className="text-[11px] text-[#6B7280] uppercase tracking-wide">Total Kehadiran</p>
-                        <p className="text-2xl font-semibold text-[#1F2937] mt-1">{stats.absensi_hari_ini} Siswa</p>
-                    </div>
-                    <div className="w-10 h-10 rounded-lg bg-[#F5F7FA] flex items-center justify-center text-[#1E3A5F]">
-                        <Users size={20} />
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Sesi Aktif</p>
+                            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{stats.sesi_aktif} Sesi</p>
+                        </div>
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                            <Radio size={20} />
+                        </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg border border-[#E5E7EB] p-4 flex items-center justify-between">
-                    <div>
-                        <p className="text-[11px] text-[#6B7280] uppercase tracking-wide">Tingkat Kehadiran</p>
-                        <p className="text-2xl font-semibold text-[#1F2937] mt-1">{tingkatKehadiran}%</p>
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Total Kehadiran</p>
+                            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{stats.absensi_hari_ini} <span className="text-sm font-normal text-[#6B7280]">Siswa</span></p>
+                        </div>
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F5F7FA] text-[#1E3A5F]">
+                            <Users size={20} />
+                        </div>
                     </div>
-                    <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-                        <BarChart3 size={20} />
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Tingkat Kehadiran</p>
+                            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{tingkatKehadiran}%</p>
+                        </div>
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                            <BarChart3 size={20} />
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* ACTIVE SESSION HERO (real, hanya tampil jika benar-benar ada) */}
             {heroSession && (
-                <div className="bg-white rounded-lg border-2 border-[#1E3A5F] p-5 shadow-sm">
+                <div className="bg-white rounded-xl border-2 border-[#1E3A5F] p-5 shadow-sm">
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E5E7EB]">
                         <div>
                             <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -215,17 +224,17 @@ export default function TeacherDashboard() {
                             </h3>
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
-                            <button
-                                onClick={() => setQrModalSessionId(heroSession.id)}
-                                className="bg-[#1E3A5F] hover:bg-[#16304F] text-white text-[12px] font-semibold px-3 py-2 rounded-lg flex items-center gap-1.5 shadow-sm"
-                            >
-                                <Monitor size={16} />
-                                <span>Tampilkan QR</span>
-                            </button>
-                            <button
-                                onClick={() => navigate(`/teacher/sessions/${heroSession.id}`)}
-                                className="bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] text-[12px] font-semibold px-3 py-2 rounded-lg flex items-center gap-1.5"
-                            >
+                <button
+                    onClick={() => setQrModalSessionId(heroSession.id)}
+                    className="bg-[#1E3A5F] hover:bg-[#16304F] text-white text-[12px] font-semibold px-3 py-2 rounded-xl flex items-center gap-1.5 shadow-sm"
+                >
+                    <Monitor size={16} />
+                    <span>Tampilkan QR</span>
+                </button>
+                <button
+                    onClick={() => navigate(`/teacher/sessions/${heroSession.id}`)}
+                    className="bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] text-[12px] font-semibold px-3 py-2 rounded-xl flex items-center gap-1.5"
+                >
                                 <BarChart3 size={16} />
                                 <span>Monitoring</span>
                             </button>
@@ -233,13 +242,13 @@ export default function TeacherDashboard() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-                        <div className="p-3 bg-[#F5F7FA] rounded border border-[#E5E7EB]">
+                        <div className="p-3 bg-[#F5F7FA] rounded-lg border border-[#E5E7EB]">
                             <p className="text-[11px] text-[#6B7280]">Total Siswa</p>
                             <p className="text-lg font-bold text-[#1F2937] mt-0.5">
                                 {heroSession.total_siswa ?? '-'} <span className="text-xs font-normal text-[#9CA3AF]">Siswa</span>
                             </p>
                         </div>
-                        <div className="p-3 bg-emerald-50 rounded border border-emerald-200">
+                        <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
                             <p className="text-[11px] text-emerald-700 font-semibold">Sudah Absen (Hadir)</p>
                             <p className="text-lg font-bold text-emerald-700 mt-0.5">
                                 {heroSession.total_hadir ?? '-'}{' '}
@@ -252,9 +261,9 @@ export default function TeacherDashboard() {
                                 </span>
                             </p>
                         </div>
-                        <div className="p-3 bg-[#F5F7FA] rounded border border-[#E5E7EB] flex flex-col justify-center">
+                        <div className="p-3 bg-[#F5F7FA] rounded-lg border border-[#E5E7EB] flex flex-col justify-center">
                             <p className="text-[11px] text-[#6B7280] font-medium">Token QR Sesi</p>
-                            <code className="text-[11px] bg-white px-2 py-0.5 rounded border border-[#E5E7EB] font-bold text-[#1E3A5F] mt-1 inline-block truncate">
+                            <code className="text-[11px] bg-white px-2 py-0.5 rounded-lg border border-[#E5E7EB] font-bold text-[#1E3A5F] mt-1 inline-block truncate">
                                 {heroSession.qr_token?.slice(0, 12)}…
                             </code>
                         </div>
@@ -283,7 +292,7 @@ export default function TeacherDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
                 {/* LEFT: Sesi Hari Ini table */}
                 <div className="lg:col-span-8 space-y-4">
-                    <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm overflow-hidden">
+                    <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
                         <div className="p-4 border-b border-[#E5E7EB]">
                             <h4 className="text-sm font-bold text-[#1E3A5F]">Sesi Absensi Hari Ini</h4>
                             <p className="text-[12px] text-[#6B7280]">Daftar sesi kelas yang Anda buat hari ini.</p>
@@ -298,9 +307,9 @@ export default function TeacherDashboard() {
                                 <p className="text-[12px] text-[#6B7280] max-w-sm mt-1 mb-4">
                                     Anda belum membuat sesi presensi kelas hari ini.
                                 </p>
-                                <button
-                                    onClick={() => setShowCreateModal(true)}
-                                    className="inline-flex items-center gap-2 bg-[#1E3A5F] hover:bg-[#16304F] text-white text-[12px] font-semibold px-4 py-2 rounded-lg"
+                    <button
+                    onClick={() => setShowCreateModal(true)}
+                    className="inline-flex items-center gap-2 bg-[#1E3A5F] hover:bg-[#16304F] text-white text-[12px] font-semibold px-4 py-2 rounded-xl"
                                 >
                                     <Play size={16} />
                                     Mulai Sesi Sekarang
@@ -344,14 +353,14 @@ export default function TeacherDashboard() {
                                                     </td>
                                                     <td className="py-2.5 px-3">
                                                         {s.status === 'active' ? (
-                                                            <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded uppercase">
-                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                                Aktif
-                                                            </span>
-                                                        ) : (
-                                                            <span className="inline-flex items-center bg-[#F3F4F6] text-[#6B7280] border border-[#E5E7EB] text-[10px] font-semibold px-2 py-0.5 rounded uppercase">
-                                                                Selesai
-                                                            </span>
+                    <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        Aktif
+                    </span>
+                ) : (
+                    <span className="inline-flex items-center bg-[#F3F4F6] text-[#6B7280] border border-[#E5E7EB] text-[10px] font-semibold px-2.5 py-0.5 rounded-full uppercase">
+                        Selesai
+                    </span>
                                                         )}
                                                     </td>
                                                     <td className="py-2.5 px-3 text-right">
@@ -360,13 +369,13 @@ export default function TeacherDashboard() {
                                                                 <>
                                                                     <button
                                                                         onClick={() => navigate(`/teacher/sessions/${s.id}`)}
-                                                                        className="bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1E3A5F] text-[11px] px-2 py-1 rounded"
+                                                                        className="bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1E3A5F] text-[11px] px-2 py-1 rounded-lg"
                                                                     >
                                                                         Monitoring
                                                                     </button>
                                                                     <button
                                                                         onClick={() => setQrModalSessionId(s.id)}
-                                                                        className="bg-[#1E3A5F] text-white hover:bg-[#16304F] text-[11px] px-2 py-1 rounded flex items-center gap-1"
+                                                                        className="bg-[#1E3A5F] text-white hover:bg-[#16304F] text-[11px] px-2 py-1 rounded-lg flex items-center gap-1"
                                                                     >
                                                                         <QrCode size={13} /> QR
                                                                     </button>
@@ -374,7 +383,7 @@ export default function TeacherDashboard() {
                                                             ) : (
                                                                 <button
                                                                     onClick={() => navigate(`/teacher/sessions/${s.id}`)}
-                                                                    className="bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1E3A5F] text-[11px] px-2 py-1 rounded font-medium"
+                                                                    className="bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1E3A5F] text-[11px] px-2 py-1 rounded-lg font-medium"
                                                                 >
                                                                     Lihat Rekap
                                                                 </button>
@@ -390,7 +399,7 @@ export default function TeacherDashboard() {
                         )}
                     </div>
 
-                    <div className="bg-white border border-[#E5E7EB] rounded-lg p-4 flex items-start gap-3">
+                    <div className="bg-white border border-[#E5E7EB] rounded-xl p-4 flex items-start gap-3">
                         <Info size={18} className="text-blue-700 shrink-0 mt-0.5" />
                         <p className="text-[12px] text-[#6B7280]">
                             Sesi yang telah ditutup dapat dilihat kembali melalui menu Sesi Absensi. Untuk analisis
@@ -402,7 +411,7 @@ export default function TeacherDashboard() {
                 {/* RIGHT */}
                 <div className="lg:col-span-4 space-y-4">
                     {/* Rekapitulasi (real, dari agregasi) */}
-                    <div className="bg-white rounded-lg border border-[#E5E7EB] p-4 shadow-sm">
+                    <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 shadow-sm">
                         <h4 className="text-sm font-bold text-[#1E3A5F] pb-2 border-b border-[#E5E7EB]">
                             Rekapitulasi Kehadiran Hari Ini
                         </h4>
@@ -418,7 +427,7 @@ export default function TeacherDashboard() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 mt-3 text-[12px]">
                                     {['hadir', 'izin', 'sakit', 'alpa'].map((key) => (
-                                        <div key={key} className="flex items-center justify-between p-2 rounded bg-[#F5F7FA] border border-[#E5E7EB]">
+                                        <div key={key} className="flex items-center justify-between p-2 rounded-lg bg-[#F5F7FA] border border-[#E5E7EB]">
                                             <span className="flex items-center gap-1.5">
                                                 <span className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT[key]}`} />
                                                 {STATUS_LABEL[key]}
@@ -432,7 +441,7 @@ export default function TeacherDashboard() {
                     </div>
 
                     {/* DUMMY: Aktivitas Presensi Terkini — belum ada endpoint log aktivitas */}
-                    <div className="bg-white rounded-lg border border-[#E5E7EB] p-4 shadow-sm">
+                    <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 shadow-sm">
                         <div className="flex items-center justify-between pb-2 border-b border-[#E5E7EB]">
                             <h4 className="text-sm font-bold text-[#1E3A5F]">Aktivitas Presensi Terkini</h4>
                             <BellRing size={16} className="text-[#9CA3AF]" />
@@ -451,12 +460,12 @@ export default function TeacherDashboard() {
                     </div>
 
                     {/* Aksi Cepat (real) */}
-                    <div className="bg-white rounded-lg border border-[#E5E7EB] p-4 shadow-sm">
+                    <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 shadow-sm">
                         <h4 className="text-sm font-bold text-[#1E3A5F] pb-2 border-b border-[#E5E7EB]">Aksi Cepat Guru</h4>
                         <div className="mt-3 space-y-2">
                             <button
                                 onClick={() => setShowCreateModal(true)}
-                                className="w-full bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1E3A5F] text-[12px] font-medium px-3 py-2 rounded-lg flex items-center justify-between"
+                                className="w-full bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1E3A5F] text-[12px] font-medium px-3 py-2 rounded-xl flex items-center justify-between"
                             >
                                 <span className="flex items-center gap-2">
                                     <PlusSquare size={16} /> Buat Sesi Baru
@@ -465,7 +474,7 @@ export default function TeacherDashboard() {
                             </button>
                             <button
                                 onClick={() => navigate('/teacher/sessions')}
-                                className="w-full bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1E3A5F] text-[12px] font-medium px-3 py-2 rounded-lg flex items-center justify-between"
+                                className="w-full bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1E3A5F] text-[12px] font-medium px-3 py-2 rounded-xl flex items-center justify-between"
                             >
                                 <span className="flex items-center gap-2">
                                     <QrCode size={16} /> Lihat Semua Sesi
@@ -474,7 +483,7 @@ export default function TeacherDashboard() {
                             </button>
                             <button
                                 onClick={() => navigate('/teacher/reports')}
-                                className="w-full bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1E3A5F] text-[12px] font-medium px-3 py-2 rounded-lg flex items-center justify-between"
+                                className="w-full bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1E3A5F] text-[12px] font-medium px-3 py-2 rounded-xl flex items-center justify-between"
                             >
                                 <span className="flex items-center gap-2">
                                     <FileText size={16} /> Rekap Absensi Semester
@@ -547,7 +556,7 @@ function CreateSessionModal({ onClose, onCreated }) {
 
     return (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={onClose}>
-            <div className="bg-white w-full max-w-md rounded-lg border border-[#E5E7EB] shadow-xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white w-full max-w-md rounded-xl border border-[#E5E7EB] shadow-xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
                 <div className="px-4 py-3 bg-[#1E3A5F] text-white flex items-center justify-between">
                     <h3 className="text-sm font-bold flex items-center gap-2">
                         <Plus size={18} /> Buat Sesi Absensi Baru
@@ -562,7 +571,7 @@ function CreateSessionModal({ onClose, onCreated }) {
                         <select
                             value={form.class_id}
                             onChange={(e) => setForm({ ...form, class_id: e.target.value })}
-                            className="w-full h-9 rounded border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]"
+                            className="w-full h-9 rounded-lg border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]"
                         >
                             <option value="">Pilih kelas</option>
                             {classes.map((c) => (
@@ -576,7 +585,7 @@ function CreateSessionModal({ onClose, onCreated }) {
                         <select
                             value={form.subject_id}
                             onChange={(e) => setForm({ ...form, subject_id: e.target.value })}
-                            className="w-full h-9 rounded border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]"
+                            className="w-full h-9 rounded-lg border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]"
                         >
                             <option value="">Pilih mata pelajaran</option>
                             {subjects.map((s) => (
@@ -592,7 +601,7 @@ function CreateSessionModal({ onClose, onCreated }) {
                                 type="time"
                                 value={form.start_time}
                                 onChange={(e) => setForm({ ...form, start_time: e.target.value })}
-                                className="w-full h-9 rounded border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]"
+                                className="w-full h-9 rounded-lg border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]"
                             />
                             {errors.start_time && <p className="text-[11px] text-red-600 mt-1">{errors.start_time[0]}</p>}
                         </div>
@@ -602,20 +611,20 @@ function CreateSessionModal({ onClose, onCreated }) {
                                 type="time"
                                 value={form.end_time}
                                 onChange={(e) => setForm({ ...form, end_time: e.target.value })}
-                                className="w-full h-9 rounded border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]"
+                                className="w-full h-9 rounded-lg border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]"
                             />
                             {errors.end_time && <p className="text-[11px] text-red-600 mt-1">{errors.end_time[0]}</p>}
                         </div>
                     </div>
                     <p className="text-[11px] text-[#9CA3AF]">Sesi akan dibuat untuk tanggal hari ini ({form.date}).</p>
                     <div className="pt-2 flex items-center justify-end gap-2 border-t border-[#E5E7EB]">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] text-sm font-medium rounded-lg">
+                        <button type="button" onClick={onClose} className="px-4 py-2 bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] text-sm font-medium rounded-xl">
                             Batal
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="px-4 py-2 bg-[#1E3A5F] hover:bg-[#16304F] text-white text-sm font-semibold rounded-lg disabled:opacity-50"
+                            className="px-4 py-2 bg-[#1E3A5F] hover:bg-[#16304F] text-white text-sm font-semibold rounded-xl disabled:opacity-50"
                         >
                             {isSubmitting ? 'Memproses...' : 'Aktifkan Sesi'}
                         </button>
@@ -661,14 +670,14 @@ function QrProjectorModal({ sessionId, onClose, onClosed }) {
     if (!session) {
         return (
             <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-                <div className="bg-white rounded-lg p-6 text-sm text-[#6B7280]">Memuat sesi...</div>
+                <div className="bg-white rounded-xl p-6 text-sm text-[#6B7280]">Memuat sesi...</div>
             </div>
         );
     }
 
     return (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={onClose}>
-            <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-2xl max-w-md w-full overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-2xl max-w-md w-full overflow-hidden" onClick={(e) => e.stopPropagation()}>
                 <div className="p-4 bg-[#1E3A5F] text-white flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Monitor size={20} />
@@ -706,7 +715,7 @@ function QrProjectorModal({ sessionId, onClose, onClosed }) {
                             {!confirmClose ? (
                                 <button
                                     onClick={() => setConfirmClose(true)}
-                                    className="px-4 py-1.5 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 text-sm font-semibold rounded-lg"
+                                    className="px-4 py-1.5 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 text-sm font-semibold rounded-xl"
                                 >
                                     Tutup Sesi
                                 </button>
@@ -716,13 +725,13 @@ function QrProjectorModal({ sessionId, onClose, onClosed }) {
                                     <button
                                         onClick={handleTutupSesi}
                                         disabled={isClosing}
-                                        className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-[12px] font-semibold rounded-lg disabled:opacity-50"
+                                        className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-[12px] font-semibold rounded-xl disabled:opacity-50"
                                     >
                                         {isClosing ? 'Menutup...' : 'Ya, Tutup'}
                                     </button>
                                     <button
                                         onClick={() => setConfirmClose(false)}
-                                        className="px-3 py-1.5 bg-white border border-[#E5E7EB] text-[#6B7280] text-[12px] font-medium rounded-lg"
+                                        className="px-3 py-1.5 bg-white border border-[#E5E7EB] text-[#6B7280] text-[12px] font-medium rounded-xl"
                                     >
                                         Batal
                                     </button>
@@ -732,7 +741,7 @@ function QrProjectorModal({ sessionId, onClose, onClosed }) {
                     )}
                 </div>
                 <div className="px-4 py-3 border-t border-[#E5E7EB] flex justify-end">
-                    <button onClick={onClose} className="px-4 py-1.5 bg-[#1E3A5F] hover:bg-[#16304F] text-white text-sm font-semibold rounded-lg">
+                    <button onClick={onClose} className="px-4 py-1.5 bg-[#1E3A5F] hover:bg-[#16304F] text-white text-sm font-semibold rounded-xl">
                         Tutup Pratinjau
                     </button>
                 </div>

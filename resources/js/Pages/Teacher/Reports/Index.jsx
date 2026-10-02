@@ -207,7 +207,7 @@ export default function TeacherReportsIndex() {
                             <button
                                 key={key}
                                 onClick={() => applyPreset(key)}
-                                className={`px-3 py-1 rounded transition-colors ${
+                                className={`px-3 py-1 rounded-full transition-colors ${
                                     activePreset === key
                                         ? 'text-white font-semibold'
                                         : 'text-[#6B7280] hover:text-[#1F2937]'
@@ -476,7 +476,7 @@ export default function TeacherReportsIndex() {
                                                 </div>
                                             </td>
                                             <td className="py-2 px-4 text-center">
-                                                <span className={`inline-flex px-2 py-0.5 rounded text-[11px] font-semibold border uppercase ${rating.cls}`}>
+                                                <span className={`inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold border uppercase ${rating.cls}`}>
                                                     {rating.label}
                                                 </span>
                                             </td>
@@ -570,10 +570,10 @@ export default function TeacherReportsIndex() {
                             <strong className="text-[#1F2937]">{studentTotalPages}</strong>
                         </span>
                         <div className="flex items-center gap-1">
-                            <button onClick={() => setStudentPage((p) => Math.max(1, p - 1))} disabled={studentPage === 1} className="h-8 w-8 rounded border border-[#E5E7EB] flex items-center justify-center disabled:opacity-40 hover:bg-[#F5F7FA]">
+                            <button onClick={() => setStudentPage((p) => Math.max(1, p - 1))} disabled={studentPage === 1} className="h-8 w-8 rounded-lg border border-[#E5E7EB] flex items-center justify-center disabled:opacity-40 hover:bg-[#F5F7FA]">
                                 <ChevronLeft size={14} />
                             </button>
-                            <button onClick={() => setStudentPage((p) => Math.min(studentTotalPages, p + 1))} disabled={studentPage === studentTotalPages} className="h-8 w-8 rounded border border-[#E5E7EB] flex items-center justify-center disabled:opacity-40 hover:bg-[#F5F7FA]">
+                            <button onClick={() => setStudentPage((p) => Math.min(studentTotalPages, p + 1))} disabled={studentPage === studentTotalPages} className="h-8 w-8 rounded-lg border border-[#E5E7EB] flex items-center justify-center disabled:opacity-40 hover:bg-[#F5F7FA]">
                                 <ChevronRight size={14} />
                             </button>
                         </div>
@@ -598,7 +598,7 @@ export default function TeacherReportsIndex() {
                             ].map(([val, label, disabled]) => (
                                 <label
                                     key={val}
-                                    className={`flex items-center gap-2 p-2 rounded border cursor-pointer ${
+                                    className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer ${
                                         exportFormat === val ? 'border-2' : 'border-[#E5E7EB]'
                                     }`}
                                     style={exportFormat === val ? { borderColor: NAVY, background: '#EFF4FF' } : undefined}

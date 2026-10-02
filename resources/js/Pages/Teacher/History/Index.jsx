@@ -201,28 +201,28 @@ export default function TeacherHistory() {
 
             {/* KPI CARDS */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                <div className="bg-white border border-[#E5E7EB] rounded-lg p-4">
+                <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center justify-between">
                         <span className="text-[11px] uppercase tracking-wide text-[#6B7280]">Total Sesi Terlaksana</span>
                         <CalendarCheck size={16} className="text-[#1E3A5F]" />
                     </div>
                     <p className="text-2xl font-bold text-[#1F2937] mt-2">{summary.totalSesi} <span className="text-sm font-normal text-[#6B7280]">Sesi</span></p>
                 </div>
-                <div className="bg-white border border-[#E5E7EB] rounded-lg p-4">
+                <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center justify-between">
                         <span className="text-[11px] uppercase tracking-wide text-[#6B7280]">Rata-rata Kehadiran</span>
                         <TrendingUp size={16} className="text-[#1E3A5F]" />
                     </div>
                     <p className="text-2xl font-bold text-[#1E3A5F] mt-2">{summary.rataKehadiran.toFixed(1)}%</p>
                 </div>
-                <div className="bg-white border border-[#E5E7EB] rounded-lg p-4">
+                <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center justify-between">
                         <span className="text-[11px] uppercase tracking-wide text-[#6B7280]">Akumulasi Hadir</span>
                         <Users2 size={16} className="text-emerald-600" />
                     </div>
                     <p className="text-2xl font-bold text-emerald-700 mt-2">{summary.akumulasiHadir} <span className="text-sm font-normal text-[#6B7280]">Siswa</span></p>
                 </div>
-                <div className="bg-white border border-[#E5E7EB] rounded-lg p-4">
+                <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center justify-between">
                         <span className="text-[11px] uppercase tracking-wide text-[#6B7280]">Total Tidak Hadir</span>
                         <UserX size={16} className="text-[#9CA3AF]" />
@@ -232,7 +232,7 @@ export default function TeacherHistory() {
             </div>
 
             {/* FILTER TOOLBAR */}
-            <div className="bg-white border border-[#E5E7EB] rounded-lg p-3">
+            <div className="bg-white border border-[#E5E7EB] rounded-xl p-3">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
                     <div className="md:col-span-3 relative">
                         <Search size={15} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
@@ -267,7 +267,7 @@ export default function TeacherHistory() {
                     </div>
                     <div className="md:col-span-1">
                         <button onClick={resetFilters}
-                            className="w-full h-9 flex items-center justify-center gap-1 border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#6B7280] rounded text-[11px] font-medium">
+                            className="w-full h-9 flex items-center justify-center gap-1 border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#6B7280] rounded-lg text-[11px] font-medium">
                             <RefreshCw size={13} />
                             <span>Reset</span>
                         </button>
@@ -285,14 +285,14 @@ export default function TeacherHistory() {
             </div>
 
             {/* TABLE */}
-            <div className="bg-white border border-[#E5E7EB] rounded-lg overflow-hidden">
+            <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden">
                 <div className="px-4 py-3 border-b border-[#E5E7EB] flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-semibold text-[#1F2937]">Daftar Riwayat Sesi</span>
                         <span className="px-2 py-0.5 bg-[#F5F7FA] text-[#1E3A5F] rounded-full text-[11px] font-semibold">{sorted.length} Sesi</span>
                     </div>
                     <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-                        className="border border-[#E5E7EB] rounded text-[11px] py-1 px-2 focus:outline-none focus:border-[#1E3A5F]">
+                        className="border border-[#E5E7EB] rounded-lg text-[11px] py-1 px-2 focus:outline-none focus:border-[#1E3A5F]">
                         <option value="terbaru">Tanggal Terkini</option>
                         <option value="terlama">Tanggal Terlama</option>
                         <option value="kehadiran_rendah">Kehadiran Terendah</option>
@@ -363,11 +363,11 @@ export default function TeacherHistory() {
                                                 <span className="inline-flex items-center gap-1"><QrCode size={13} className="text-[#1E3A5F]" />QR</span>
                                             </td>
                                             <td className="py-2.5 px-3 text-center">
-                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-[#F3F4F6] text-[#6B7280] border border-[#E5E7EB]">Selesai</span>
+                                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase bg-[#F3F4F6] text-[#6B7280] border border-[#E5E7EB]">Selesai</span>
                                             </td>
                                             <td className="py-2.5 px-3 text-right">
                                                 <button onClick={() => setDetailSession(s)}
-                                                    className="px-2.5 py-1 bg-[#F5F7FA] text-[#1E3A5F] hover:bg-[#1E3A5F] hover:text-white rounded text-[11px] font-medium transition-colors">
+                                                                                                                className="px-2.5 py-1 bg-[#F5F7FA] text-[#1E3A5F] hover:bg-[#1E3A5F] hover:text-white rounded-full text-[11px] font-medium transition-colors">
                                                     Lihat Rincian
                                                 </button>
                                             </td>
@@ -407,7 +407,7 @@ export default function TeacherHistory() {
             {/* MODAL DETAIL SESI (data asli dari GET /teacher/sessions/:id) */}
             {detailSession && (
                 <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={() => setDetailSession(null)}>
-                    <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
                         <div className="p-4 bg-[#1E3A5F] text-white flex items-center justify-between shrink-0">
                             <div>
                                 <h3 className="text-sm font-bold">{detailSession.mata_pelajaran} ({detailSession.kelas})</h3>
@@ -418,9 +418,9 @@ export default function TeacherHistory() {
                             <button onClick={() => setDetailSession(null)} className="text-white/80 hover:text-white"><X size={18} /></button>
                         </div>
                         <div className="px-4 py-2.5 border-b border-[#E5E7EB] flex flex-wrap items-center gap-2 shrink-0">
-                            <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-[#F5F7FA] text-[#1F2937] border border-[#E5E7EB]">Total: {detailSession.total_siswa}</span>
-                            <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Hadir: {detailSession.total_hadir}</span>
-                            <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-[#F3F4F6] text-[#6B7280] border border-[#E5E7EB]">Tidak Hadir: {detailSession.total_siswa - detailSession.total_hadir}</span>
+                            <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#F5F7FA] text-[#1F2937] border border-[#E5E7EB]">Total: {detailSession.total_siswa}</span>
+                            <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Hadir: {detailSession.total_hadir}</span>
+                            <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#F3F4F6] text-[#6B7280] border border-[#E5E7EB]">Tidak Hadir: {detailSession.total_siswa - detailSession.total_hadir}</span>
                         </div>
                         <div className="overflow-y-auto flex-1">
                             <table className="w-full text-left text-xs">
@@ -437,7 +437,7 @@ export default function TeacherHistory() {
                                             <td className="py-2 px-4 font-medium text-[#1F2937]">{s.nama}</td>
                                             <td className="py-2 px-4 font-mono text-[#6B7280]">{s.waktu ?? '-'}</td>
                                             <td className="py-2 px-4 text-right">
-                                                <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-semibold ${
+                                                <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold ${
                                                     s.status === 'hadir' ? 'bg-emerald-50 text-emerald-700' : 'bg-[#F3F4F6] text-[#6B7280]'
                                                 }`}>
                                                     <span className={`w-1.5 h-1.5 rounded-full ${s.status === 'hadir' ? 'bg-emerald-500' : 'bg-[#9CA3AF]'}`} />

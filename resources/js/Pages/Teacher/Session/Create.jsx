@@ -48,16 +48,16 @@ export default function SessionCreate() {
 
     return (
         <div className="max-w-lg">
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Buat Sesi Absensi</h1>
-            <p className="text-gray-500 mb-6">Isi detail sesi absensi yang akan dimulai.</p>
+            <h1 className="text-2xl font-bold text-[#1F2937] mb-1">Buat Sesi Absensi</h1>
+            <p className="text-[#6B7280] mb-6">Isi detail sesi absensi yang akan dimulai.</p>
 
-            <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+            <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-[#E5E7EB] p-5 space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
+                    <label className="block text-sm font-medium text-[#374151] mb-1">Kelas</label>
                     <select
                         value={form.class_id}
                         onChange={(e) => setForm({ ...form, class_id: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        className="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg text-sm"
                     >
                         <option value="">Pilih kelas</option>
                         {classes.map((c) => (
@@ -68,11 +68,11 @@ export default function SessionCreate() {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran</label>
+                    <label className="block text-sm font-medium text-[#374151] mb-1">Mata Pelajaran</label>
                     <select
                         value={form.subject_id}
                         onChange={(e) => setForm({ ...form, subject_id: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        className="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg text-sm"
                     >
                         <option value="">Pilih mata pelajaran</option>
                         {subjects.map((s) => (
@@ -83,35 +83,35 @@ export default function SessionCreate() {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                    <label className="block text-sm font-medium text-[#374151] mb-1">Tanggal</label>
                     <input
                         type="date"
                         value={form.date}
                         onChange={(e) => setForm({ ...form, date: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        className="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg text-sm"
                     />
                     {errors.date && <p className="text-xs text-red-600 mt-1">{errors.date[0]}</p>}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Waktu Mulai</label>
+                        <label className="block text-sm font-medium text-[#374151] mb-1">Waktu Mulai</label>
                         <input
                             type="time"
                             value={form.start_time}
                             onChange={(e) => setForm({ ...form, start_time: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                            className="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg text-sm"
                         />
                         {errors.start_time && <p className="text-xs text-red-600 mt-1">{errors.start_time[0]}</p>}
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Waktu Selesai</label>
+                        <label className="block text-sm font-medium text-[#374151] mb-1">Waktu Selesai</label>
                         <input
                             type="time"
                             value={form.end_time}
                             onChange={(e) => setForm({ ...form, end_time: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                            className="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg text-sm"
                         />
                         {errors.end_time && <p className="text-xs text-red-600 mt-1">{errors.end_time[0]}</p>}
                     </div>

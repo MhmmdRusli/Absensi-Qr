@@ -250,7 +250,7 @@ export default function TeacherLayouts() {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded bg-[#F5F7FA] border border-[#E5E7EB] text-[#6B7280] text-[11px] font-medium">
+                        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F5F7FA] border border-[#E5E7EB] text-[#6B7280] text-[11px] font-medium">
                             <CalendarDays size={14} className="text-[#1E3A5F]" />
                             <span>{today}</span>
                         </div>
@@ -268,7 +268,7 @@ export default function TeacherLayouts() {
                                         <span className="text-sm font-semibold text-[#1F2937]">Notifikasi</span>
                                         <button
                                             onClick={() => setShowNotifications(false)}
-                                            className="p-1 rounded hover:bg-gray-100 text-[#6B7280]"
+                                            className="p-1 rounded-lg hover:bg-[#F3F4F6] text-[#6B7280]"
                                         >
                                             <X size={14} />
                                         </button>

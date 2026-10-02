@@ -181,7 +181,7 @@ export default function AdminLayout() {
                                         <span className="text-sm font-semibold text-[#1F2937]">Notifikasi</span>
                                         <button
                                             onClick={() => setShowNotifications(false)}
-                                            className="p-1 rounded hover:bg-slate-100 text-[#6B7280]"
+                                            className="p-1 rounded-lg hover:bg-slate-100 text-[#6B7280]"
                                         >
                                             <X size={14} />
                                         </button>

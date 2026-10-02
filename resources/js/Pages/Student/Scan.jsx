@@ -147,7 +147,7 @@ export default function Scan() {
                     </p>
                 </div>
                 {/* DUMMY: countdown sesi kelas — backend belum expose data sesi real-time untuk siswa */}
-                <div className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg shadow-sm">
+                <div className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E5E7EB] rounded-xl shadow-sm">
                     <span className="relative flex h-2.5 w-2.5">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-600 opacity-75" />
                         <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-600" />
@@ -165,14 +165,14 @@ export default function Scan() {
             {/* 2-COLUMN GRID: SCANNER + SIDE INFO */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                 {/* KOLOM 1: SCANNER CARD (real functionality) */}
-                <div className="lg:col-span-7 flex flex-col gap-4 bg-white border border-[#E5E7EB] rounded-lg p-5 shadow-sm">
+                <div className="lg:col-span-7 flex flex-col gap-4 bg-white border border-[#E5E7EB] rounded-xl p-5 shadow-sm">
                     <div className="flex items-center justify-between pb-2 border-b border-[#E5E7EB]">
                         <div className="flex items-center gap-2">
                             <Video size={18} className="text-blue-700" />
                             <h2 className="text-sm font-semibold text-[#1F2937]">Scanner Kamera QR</h2>
                         </div>
                         {status === 'scanning' && (
-                            <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-[#F5F7FA] text-blue-700 border border-[#E5E7EB] text-[11px] font-medium">
+                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-[#F5F7FA] text-blue-700 border border-[#E5E7EB] text-[11px] font-medium">
                                 <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
                                 <span>Kamera Aktif • 1080p</span>
                             </div>
@@ -180,7 +180,7 @@ export default function Scan() {
                     </div>
 
                     {/* Viewfinder Area — video real di dalamnya */}
-                    <div className="relative w-full aspect-[4/3] bg-[#0F172A] rounded-lg overflow-hidden border border-[#E5E7EB]">
+                    <div className="relative w-full aspect-[4/3] bg-[#0F172A] rounded-xl overflow-hidden border border-[#E5E7EB]">
                         {status === 'scanning' && (
                             <>
                                 {/* Elemen video real dari html5-qrcode */}
@@ -189,7 +189,7 @@ export default function Scan() {
                                 {/* Overlay dekoratif — tidak mengganggu video (pointer-events-none) */}
                                 <div className="absolute inset-0 flex flex-col justify-between p-4 pointer-events-none z-10">
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-black/60 text-white rounded text-[11px]">
+                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-black/60 text-white rounded-full text-[11px]">
                                             <CheckCircle2 size={14} className="text-emerald-400" />
                                             <span>Sensor Siap</span>
                                         </div>
@@ -225,7 +225,7 @@ export default function Scan() {
                                         <div className="absolute bottom-0 right-0 w-7 h-7 border-b-4 border-r-4 border-white rounded-br" />
                                         <div className="absolute left-1 right-1 h-0.5 bg-blue-400 shadow-[0_0_10px_#60a5fa]" style={{ animation: 'scanMove 2s ease-in-out infinite' }} />
                                         <div className="absolute -bottom-6 inset-x-0 text-center">
-                                            <span className="px-2 py-0.5 bg-black/70 text-white/90 rounded text-[10px]">
+                                            <span className="px-2 py-0.5 bg-black/70 text-white/90 rounded-full text-[10px]">
                                                 Arahkan tepat ke QR guru
                                             </span>
                                         </div>
@@ -265,7 +265,7 @@ export default function Scan() {
                                 <span className="text-[11px] text-[#6B7280]">
                                     {result.mata_pelajaran} • {result.nama} ({result.kelas})
                                 </span>
-                                <span className="mt-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 border border-emerald-300 rounded text-[10px] font-bold uppercase">
+                                <span className="mt-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-full text-[10px] font-bold uppercase">
                                     {result.status}
                                 </span>
                             </div>
@@ -293,7 +293,7 @@ export default function Scan() {
                         {status === 'error' ? (
                             <button
                                 onClick={handleScanUlang}
-                                className="w-full sm:flex-1 h-9 bg-[#1E3A5F] hover:bg-[#16304F] text-white text-[12px] font-semibold rounded flex items-center justify-center gap-2 transition-colors"
+                                className="w-full sm:flex-1 h-9 bg-[#1E3A5F] hover:bg-[#16304F] text-white text-[12px] font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors"
                             >
                                 <ScanLine size={16} />
                                 <span>Mulai Pemindaian Ulang</span>
@@ -301,7 +301,7 @@ export default function Scan() {
                         ) : (
                             <button
                                 disabled
-                                className="w-full sm:flex-1 h-9 bg-[#1E3A5F]/60 text-white text-[12px] font-semibold rounded flex items-center justify-center gap-2 cursor-not-allowed"
+                                className="w-full sm:flex-1 h-9 bg-[#1E3A5F]/60 text-white text-[12px] font-semibold rounded-lg flex items-center justify-center gap-2 cursor-not-allowed"
                             >
                                 <QrCode size={16} />
                                 <span>
@@ -313,7 +313,7 @@ export default function Scan() {
                         )}
                         <button
                             onClick={() => navigate('/student/dashboard')}
-                            className="w-full sm:w-auto px-4 h-9 bg-white border border-[#E5E7EB] text-[#1F2937] hover:bg-[#F5F7FA] text-[12px] font-semibold rounded flex items-center justify-center gap-2 transition-colors"
+                            className="w-full sm:w-auto px-4 h-9 bg-white border border-[#E5E7EB] text-[#1F2937] hover:bg-[#F5F7FA] text-[12px] font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors"
                         >
                             <ArrowLeft size={16} />
                             <span>Kembali ke Dashboard</span>
@@ -331,13 +331,13 @@ export default function Scan() {
                 {/* KOLOM 2: SIDE INFO PANELS */}
                 <div className="lg:col-span-5 flex flex-col gap-5">
                     {/* DUMMY: backend belum ada endpoint detail sesi aktif untuk siswa sebelum scan */}
-                    <div className="bg-white border border-[#E5E7EB] rounded-lg p-5 shadow-sm">
+                    <div className="bg-white border border-[#E5E7EB] rounded-xl p-5 shadow-sm">
                         <div className="flex items-center justify-between pb-2 border-b border-[#E5E7EB]">
                             <div className="flex items-center gap-2">
                                 <CalendarCheck size={18} className="text-blue-700" />
                                 <h3 className="text-sm font-semibold text-[#1F2937]">Status Sesi Absensi Aktif</h3>
                             </div>
-                            <span className="text-[11px] px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded">
+                            <span className="text-[11px] px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-full">
                                 Menunggu Scan Siswa
                             </span>
                         </div>
@@ -370,7 +370,7 @@ export default function Scan() {
                     </div>
 
                     {/* Panduan — konten statis, tidak tergantung data */}
-                    <div className="bg-white border border-[#E5E7EB] rounded-lg p-5 shadow-sm">
+                    <div className="bg-white border border-[#E5E7EB] rounded-xl p-5 shadow-sm">
                         <div className="flex items-center gap-2 pb-2 border-b border-[#E5E7EB]">
                             <BookOpen size={18} className="text-blue-700" />
                             <h3 className="text-sm font-semibold text-[#1F2937]">Panduan Cara Melakukan Absensi</h3>
@@ -425,10 +425,10 @@ export default function Scan() {
                     </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-                    <div className="bg-white border border-[#E5E7EB] rounded-lg p-4 flex flex-col gap-2 shadow-sm">
+                    <div className="bg-white border border-[#E5E7EB] rounded-xl p-4 flex flex-col gap-2 shadow-sm">
                         <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-2">
                             <span className="text-[10px] text-[#6B7280] uppercase font-semibold">State: Standby</span>
-                            <span className="text-[10px] px-1.5 py-0.5 bg-[#F5F7FA] text-blue-700 rounded">Waiting</span>
+                            <span className="text-[10px] px-1.5 py-0.5 bg-[#F5F7FA] text-blue-700 rounded-full">Waiting</span>
                         </div>
                         <div className="h-28 bg-[#0F172A] rounded flex flex-col items-center justify-center text-center p-2">
                             <QrCode size={26} className="text-white/50 mb-1" />
@@ -436,10 +436,10 @@ export default function Scan() {
                         </div>
                     </div>
 
-                    <div className="bg-white border border-[#E5E7EB] rounded-lg p-4 flex flex-col gap-2 shadow-sm">
+                    <div className="bg-white border border-[#E5E7EB] rounded-xl p-4 flex flex-col gap-2 shadow-sm">
                         <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-2">
                             <span className="text-[10px] text-[#6B7280] uppercase font-semibold">State: Validasi</span>
-                            <span className="text-[10px] px-1.5 py-0.5 bg-[#F5F7FA] text-blue-700 rounded">Checking</span>
+                            <span className="text-[10px] px-1.5 py-0.5 bg-[#F5F7FA] text-blue-700 rounded-full">Checking</span>
                         </div>
                         <div className="h-28 bg-[#F5F7FA] rounded flex flex-col items-center justify-center text-center p-2">
                             <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-1" />
@@ -447,10 +447,10 @@ export default function Scan() {
                         </div>
                     </div>
 
-                    <div className="bg-white border border-emerald-200 rounded-lg p-4 flex flex-col gap-2 shadow-sm bg-emerald-50/40">
+                    <div className="bg-white border border-emerald-200 rounded-xl p-4 flex flex-col gap-2 shadow-sm bg-emerald-50/40">
                         <div className="flex items-center justify-between border-b border-emerald-200 pb-2">
                             <span className="text-[10px] text-emerald-700 uppercase font-semibold">State: Berhasil</span>
-                            <span className="text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded font-bold">
+                            <span className="text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full font-bold">
                                 HADIR
                             </span>
                         </div>
@@ -462,10 +462,10 @@ export default function Scan() {
                         </div>
                     </div>
 
-                    <div className="bg-white border border-[#E5E7EB] rounded-lg p-4 flex flex-col gap-2 shadow-sm">
+                    <div className="bg-white border border-[#E5E7EB] rounded-xl p-4 flex flex-col gap-2 shadow-sm">
                         <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-2">
                             <span className="text-[10px] text-red-600 uppercase font-semibold">State: Tidak Valid</span>
-                            <span className="text-[10px] px-1.5 py-0.5 bg-red-50 text-red-600 border border-red-200 rounded">
+                            <span className="text-[10px] px-1.5 py-0.5 bg-red-50 text-red-600 border border-red-200 rounded-full">
                                 Expired
                             </span>
                         </div>
@@ -475,10 +475,10 @@ export default function Scan() {
                         </div>
                     </div>
 
-                    <div className="bg-white border border-[#E5E7EB] rounded-lg p-4 flex flex-col gap-2 shadow-sm">
+                    <div className="bg-white border border-[#E5E7EB] rounded-xl p-4 flex flex-col gap-2 shadow-sm">
                         <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-2">
                             <span className="text-[10px] text-[#6B7280] uppercase font-semibold">State: Tidak Ada Sesi</span>
-                            <span className="text-[10px] px-1.5 py-0.5 bg-[#F5F7FA] text-[#6B7280] border border-[#E5E7EB] rounded">
+                            <span className="text-[10px] px-1.5 py-0.5 bg-[#F5F7FA] text-[#6B7280] border border-[#E5E7EB] rounded-full">
                                 Idle
                             </span>
                         </div>
@@ -488,10 +488,10 @@ export default function Scan() {
                         </div>
                     </div>
 
-                    <div className="bg-white border border-[#E5E7EB] rounded-lg p-4 flex flex-col gap-2 shadow-sm">
+                    <div className="bg-white border border-[#E5E7EB] rounded-xl p-4 flex flex-col gap-2 shadow-sm">
                         <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-2">
                             <span className="text-[10px] text-red-600 uppercase font-semibold">State: Izin Kamera</span>
-                            <span className="text-[10px] px-1.5 py-0.5 bg-red-50 text-red-600 border border-red-200 rounded">
+                            <span className="text-[10px] px-1.5 py-0.5 bg-red-50 text-red-600 border border-red-200 rounded-full">
                                 Denied
                             </span>
                         </div>

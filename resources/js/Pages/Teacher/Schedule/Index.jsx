@@ -139,7 +139,7 @@ export default function TeacherScheduleIndex() {
             {/* MODAL TAMBAH JADWAL */}
             {showModal && (
                 <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
-                    <div className="bg-white w-full max-w-md rounded-lg border border-[#E5E7EB] shadow-xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-white w-full max-w-md rounded-xl border border-[#E5E7EB] shadow-xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
                         <div className="px-4 py-3 bg-[#1E3A5F] text-white flex items-center justify-between">
                             <h3 className="text-sm font-bold flex items-center gap-2"><GraduationCap size={18} /> Tambah Jadwal Pelajaran</h3>
                             <button onClick={() => setShowModal(false)} className="text-white/80 hover:text-white"><X size={18} /></button>
@@ -147,13 +147,13 @@ export default function TeacherScheduleIndex() {
                         <form onSubmit={handleSubmit} className="p-5 space-y-4">
                             <div>
                                 <label className="block text-[11px] font-bold text-[#6B7280] uppercase mb-1">Hari</label>
-                                <select value={form.day_of_week} onChange={(e) => setForm({ ...form, day_of_week: e.target.value })} className="w-full h-9 rounded border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]">
+                                <select value={form.day_of_week} onChange={(e) => setForm({ ...form, day_of_week: e.target.value })} className="w-full h-9 rounded-lg border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]">
                                     {DAYS.map((d) => <option key={d} value={d}>{d}</option>)}
                                 </select>
                             </div>
                             <div>
                                 <label className="block text-[11px] font-bold text-[#6B7280] uppercase mb-1">Mata Pelajaran</label>
-                                <select value={form.subject_id} onChange={(e) => setForm({ ...form, subject_id: e.target.value })} className="w-full h-9 rounded border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]">
+                                <select value={form.subject_id} onChange={(e) => setForm({ ...form, subject_id: e.target.value })} className="w-full h-9 rounded-lg border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]">
                                     <option value="">Pilih mata pelajaran</option>
                                     {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
                                 </select>
@@ -161,7 +161,7 @@ export default function TeacherScheduleIndex() {
                             </div>
                             <div>
                                 <label className="block text-[11px] font-bold text-[#6B7280] uppercase mb-1">Kelas</label>
-                                <select value={form.class_id} onChange={(e) => setForm({ ...form, class_id: e.target.value })} className="w-full h-9 rounded border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]">
+                                <select value={form.class_id} onChange={(e) => setForm({ ...form, class_id: e.target.value })} className="w-full h-9 rounded-lg border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]">
                                     <option value="">Pilih kelas</option>
                                     {classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                                 </select>
@@ -170,18 +170,18 @@ export default function TeacherScheduleIndex() {
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <label className="block text-[11px] font-bold text-[#6B7280] uppercase mb-1">Mulai</label>
-                                    <input type="time" value={form.start_time} onChange={(e) => setForm({ ...form, start_time: e.target.value })} className="w-full h-9 rounded border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]" />
+                                    <input type="time" value={form.start_time} onChange={(e) => setForm({ ...form, start_time: e.target.value })} className="w-full h-9 rounded-lg border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]" />
                                     {errors.start_time && <p className="text-[11px] text-red-600 mt-1">{errors.start_time[0]}</p>}
                                 </div>
                                 <div>
                                     <label className="block text-[11px] font-bold text-[#6B7280] uppercase mb-1">Selesai</label>
-                                    <input type="time" value={form.end_time} onChange={(e) => setForm({ ...form, end_time: e.target.value })} className="w-full h-9 rounded border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]" />
+                                    <input type="time" value={form.end_time} onChange={(e) => setForm({ ...form, end_time: e.target.value })} className="w-full h-9 rounded-lg border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]" />
                                     {errors.end_time && <p className="text-[11px] text-red-600 mt-1">{errors.end_time[0]}</p>}
                                 </div>
                             </div>
                             <div>
                                 <label className="block text-[11px] font-bold text-[#6B7280] uppercase mb-1">Ruangan (Opsional)</label>
-                                <input type="text" value={form.room} onChange={(e) => setForm({ ...form, room: e.target.value })} placeholder="Contoh: Lab 1" className="w-full h-9 rounded border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]" />
+                                <input type="text" value={form.room} onChange={(e) => setForm({ ...form, room: e.target.value })} placeholder="Contoh: Lab 1" className="w-full h-9 rounded-lg border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]" />
                             </div>
                             <div className="pt-2 flex items-center justify-end gap-2 border-t border-[#E5E7EB]">
                                 <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] text-sm font-medium rounded-lg">Batal</button>
@@ -208,7 +208,7 @@ function DayCard({ day, items, classes, subjects, onDelete }) {
     });
 
     return (
-        <div className="bg-white border border-[#E5E7EB] rounded-lg shadow-sm overflow-hidden flex flex-col">
+        <div className="bg-white border border-[#E5E7EB] rounded-xl shadow-sm overflow-hidden flex flex-col">
             <div className="px-4 py-2.5 border-b border-[#E5E7EB] bg-[#F5F7FA]">
                 <h3 className="text-sm font-bold text-[#1E3A5F]">{day}</h3>
             </div>
@@ -219,7 +219,7 @@ function DayCard({ day, items, classes, subjects, onDelete }) {
                         <select
                             value={subjectFilter}
                             onChange={(e) => setSubjectFilter(e.target.value)}
-                            className="w-full h-8 rounded border border-[#E5E7EB] px-2 text-xs focus:outline-none focus:border-[#1E3A5F]"
+                            className="w-full h-8 rounded-lg border border-[#E5E7EB] px-2 text-xs focus:outline-none focus:border-[#1E3A5F]"
                         >
                             <option value="">Semua</option>
                             {subjects.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -230,7 +230,7 @@ function DayCard({ day, items, classes, subjects, onDelete }) {
                         <select
                             value={classFilter}
                             onChange={(e) => setClassFilter(e.target.value)}
-                            className="w-full h-8 rounded border border-[#E5E7EB] px-2 text-xs focus:outline-none focus:border-[#1E3A5F]"
+                            className="w-full h-8 rounded-lg border border-[#E5E7EB] px-2 text-xs focus:outline-none focus:border-[#1E3A5F]"
                         >
                             <option value="">Semua</option>
                             {classes.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -243,7 +243,7 @@ function DayCard({ day, items, classes, subjects, onDelete }) {
                 ) : (
                     <div className="space-y-2">
                         {filtered.map((item) => (
-                            <div key={item.id} className="p-2.5 rounded border border-[#E5E7EB] bg-white hover:bg-[#F8FAFC] transition-colors">
+                            <div key={item.id} className="p-2.5 rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#F8FAFC] transition-colors">
                                 <div className="flex items-start justify-between gap-2">
                                     <div className="space-y-1">
                                         <p className="text-xs font-bold text-[#1F2937]">{item.subject}</p>

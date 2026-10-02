@@ -210,69 +210,64 @@ export default function History() {
 
             {/* SUMMARY CARDS (data asli) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
-                <div className="bg-white rounded-lg border border-[#E5E7EB] p-4">
-                    <span className="text-[11px] uppercase tracking-wide text-[#6B7280]">Total Kehadiran</span>
+                <div className="bg-white rounded-2xl border border-[#E5E7EB] p-4 shadow-sm">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9CA3AF]">Total Kehadiran</span>
                     <div className="mt-2">
-                        <span className="text-2xl font-bold text-[#1F2937]">{summary.total}</span>
-                        <span className="text-xs text-[#6B7280] ml-1">Sesi</span>
+                        <span className="text-3xl font-bold text-[#1F2937]">{summary.total}</span>
                     </div>
                     <p className="text-[11px] text-[#6B7280] mt-0.5">Total sesi tercatat</p>
                 </div>
 
-                <div className="bg-white rounded-lg border border-[#E5E7EB] p-4">
+                <div className="bg-white rounded-2xl border border-[#E5E7EB] p-4 shadow-sm">
                     <div className="flex items-center justify-between">
-                        <span className="text-[11px] uppercase tracking-wide text-emerald-700">Hadir</span>
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9CA3AF]">Hadir</span>
+                        <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                             {summary.pctHadir}%
                         </span>
                     </div>
                     <div className="mt-2">
-                        <span className="text-2xl font-bold text-emerald-800">{summary.hadir}</span>
-                        <span className="text-xs text-emerald-700 ml-1">Sesi</span>
+                        <span className="text-3xl font-bold text-[#1F2937]">{summary.hadir}</span>
                     </div>
                     <p className="text-[11px] text-emerald-700 mt-0.5">Dari total sesi tercatat</p>
                 </div>
 
-                <div className="bg-white rounded-lg border border-[#E5E7EB] p-4">
+                <div className="bg-white rounded-2xl border border-[#E5E7EB] p-4 shadow-sm">
                     <div className="flex items-center justify-between">
-                        <span className="text-[11px] uppercase tracking-wide text-amber-700">Izin</span>
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9CA3AF]">Izin</span>
+                        <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
                             {summary.pctIzin}%
                         </span>
                     </div>
                     <div className="mt-2">
-                        <span className="text-2xl font-bold text-amber-800">{summary.izin}</span>
-                        <span className="text-xs text-amber-700 ml-1">Sesi</span>
+                        <span className="text-3xl font-bold text-[#1F2937]">{summary.izin}</span>
                     </div>
                     <p className="text-[11px] text-amber-700 mt-0.5">Status izin tercatat</p>
                 </div>
 
-                <div className="bg-white rounded-lg border border-[#E5E7EB] p-4">
+                <div className="bg-white rounded-2xl border border-[#E5E7EB] p-4 shadow-sm">
                     <div className="flex items-center justify-between">
-                        <span className="text-[11px] uppercase tracking-wide text-blue-700">Sakit</span>
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9CA3AF]">Sakit</span>
+                        <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
                             {summary.pctSakit}%
                         </span>
                     </div>
                     <div className="mt-2">
-                        <span className="text-2xl font-bold text-blue-800">{summary.sakit}</span>
-                        <span className="text-xs text-blue-700 ml-1">Sesi</span>
+                        <span className="text-3xl font-bold text-[#1F2937]">{summary.sakit}</span>
                     </div>
                     <p className="text-[11px] text-blue-700 mt-0.5">Status sakit tercatat</p>
                 </div>
 
-                <div className="bg-white rounded-lg border border-[#E5E7EB] p-4">
+                <div className="bg-white rounded-2xl border border-[#E5E7EB] p-4 shadow-sm">
                     <div className="flex items-center justify-between">
-                        <span className="text-[11px] uppercase tracking-wide text-red-700">Alpa</span>
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9CA3AF]">Alpa</span>
                         {summary.alpa > 0 && (
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-50 text-red-600 border border-red-200">
+                            <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-600 border border-red-200">
                                 Peringatan
                             </span>
                         )}
                     </div>
                     <div className="mt-2">
-                        <span className="text-2xl font-bold text-red-700">{summary.alpa}</span>
-                        <span className="text-xs text-red-600 ml-1">Sesi</span>
+                        <span className="text-3xl font-bold text-[#1F2937]">{summary.alpa}</span>
                     </div>
                     <p className="text-[11px] text-red-600 mt-0.5">
                         {summary.lastAlpa
@@ -283,7 +278,7 @@ export default function History() {
             </div>
 
             {/* FILTER & SEARCH TOOLBAR */}
-            <div className="bg-white rounded-lg border border-[#E5E7EB] p-4">
+            <div className="bg-white rounded-xl border border-[#E5E7EB] p-4">
                 <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
                     <div className="relative flex-1 min-w-[220px]">
                         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
@@ -400,7 +395,7 @@ export default function History() {
             </div>
 
             {/* TABLE */}
-            <div className="bg-white rounded-lg border border-[#E5E7EB] overflow-hidden">
+            <div className="bg-white rounded-xl border border-[#E5E7EB] overflow-hidden">
                 {loading ? (
                     <div className="p-10 text-center text-[#6B7280] text-sm">Memuat data...</div>
                 ) : errorMsg ? (
@@ -473,7 +468,7 @@ export default function History() {
                                                 </td>
                                                 <td className="py-2 px-4 text-[#6B7280]">-</td>
                                                 <td className="py-2 px-3">
-                                                    <span className="inline-block px-2 py-0.5 bg-[#F3F4F6] text-[#374151] rounded text-[11px] font-medium border border-[#E5E7EB]">
+                                                    <span className="inline-block px-2 py-0.5 bg-[#F3F4F6] text-[#374151] rounded-full text-[11px] font-medium border border-[#E5E7EB]">
                                                         {row.kelas}
                                                     </span>
                                                 </td>
@@ -560,7 +555,7 @@ export default function History() {
                     onClick={() => setSelectedDetail(null)}
                 >
                     <div
-                        className="bg-white w-full max-w-sm rounded-lg border border-[#E5E7EB] shadow-xl overflow-hidden"
+                        className="bg-white w-full max-w-sm rounded-xl border border-[#E5E7EB] shadow-xl overflow-hidden"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="px-4 py-3 border-b border-[#E5E7EB] flex items-center justify-between bg-[#F5F7FA]">

@@ -190,40 +190,46 @@ export default function SessionIndex() {
 
             {/* SUMMARY CARDS */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                <div className="bg-white border border-[#E5E7EB] rounded-lg p-4">
+                <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center justify-between">
-                        <span className="text-[11px] uppercase tracking-wide text-[#6B7280]">Total Sesi Aktif</span>
-                        <CalendarDays size={16} className="text-[#1E3A5F]" />
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9CA3AF]">Total Sesi Aktif</span>
+                        <span className="h-9 w-9 rounded-xl bg-[#F5F7FA] flex items-center justify-center">
+                            <CalendarDays size={16} className="text-[#1E3A5F]" />
+                        </span>
                     </div>
-                    <p className="text-2xl font-bold text-[#1F2937] mt-2">{summary.total} <span className="text-sm font-normal text-[#6B7280]">Sesi</span></p>
+                    <p className="text-3xl font-bold text-[#1F2937] mt-2">{summary.total}</p>
                 </div>
-                <div className="bg-white border border-[#E5E7EB] border-l-4 border-l-emerald-500 rounded-lg p-4">
+                <div className="bg-white border border-[#E5E7EB] border-l-4 border-l-emerald-500 rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center justify-between">
-                        <span className="text-[11px] uppercase tracking-wide text-[#6B7280]">Sesi Aktif</span>
-                        <Radio size={16} className="text-emerald-600" />
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9CA3AF]">Sesi Aktif</span>
+                        <span className="h-9 w-9 rounded-xl bg-emerald-50 flex items-center justify-center">
+                            <Radio size={16} className="text-emerald-600" />
+                        </span>
                     </div>
-                    <p className="text-2xl font-bold text-emerald-700 mt-2">{summary.aktif} <span className="text-sm font-normal text-[#6B7280]">Sesi</span></p>
+                    <p className="text-3xl font-bold text-[#1F2937] mt-2">{summary.aktif}</p>
                 </div>
-                <div className="bg-white border border-[#E5E7EB] rounded-lg p-4">
+                <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center justify-between">
-                        <span className="text-[11px] uppercase tracking-wide text-[#6B7280]">Sesi Selesai</span>
-                        <CheckCircle2 size={16} className="text-[#9CA3AF]" />
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9CA3AF]">Sesi Selesai</span>
+                        <span className="h-9 w-9 rounded-xl bg-[#F5F7FA] flex items-center justify-center">
+                            <CheckCircle2 size={16} className="text-[#9CA3AF]" />
+                        </span>
                     </div>
-                    <p className="text-2xl font-bold text-[#9CA3AF] mt-2">-</p>
-                    <p className="text-[10px] text-[#9CA3AF] mt-0.5">Lihat di Riwayat</p>
+                    <p className="text-3xl font-bold text-[#9CA3AF] mt-2">-</p>
                 </div>
-                <div className="bg-white border border-[#E5E7EB] rounded-lg p-4">
+                <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center justify-between">
-                        <span className="text-[11px] uppercase tracking-wide text-[#6B7280]">Sesi Hari Ini</span>
-                        <Clock3 size={16} className="text-[#1E3A5F]" />
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9CA3AF]">Sesi Hari Ini</span>
+                        <span className="h-9 w-9 rounded-xl bg-[#F5F7FA] flex items-center justify-center">
+                            <Clock3 size={16} className="text-[#1E3A5F]" />
+                        </span>
                     </div>
-                    <p className="text-2xl font-bold text-[#1F2937] mt-2">-</p>
-                    <p className="text-[10px] text-[#9CA3AF] mt-0.5">Fitur belum didukung</p>
+                    <p className="text-3xl font-bold text-[#9CA3AF] mt-2">-</p>
                 </div>
             </div>
 
             {/* FILTER TOOLBAR */}
-            <div className="bg-white border border-[#E5E7EB] rounded-lg p-3">
+            <div className="bg-white border border-[#E5E7EB] rounded-xl p-3">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
                     <div className="md:col-span-4 relative">
                         <Search size={15} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
@@ -232,7 +238,7 @@ export default function SessionIndex() {
                             value={search}
                             onChange={(e) => { setPage(1); setSearch(e.target.value); }}
                             placeholder="Cari mata pelajaran atau kelas..."
-                            className="w-full h-9 pl-8 pr-3 text-xs bg-white border border-[#E5E7EB] rounded text-[#1F2937] focus:outline-none focus:border-[#1E3A5F]"
+                            className="w-full h-9 pl-8 pr-3 text-xs bg-white border border-[#E5E7EB] rounded-lg text-[#1F2937] focus:outline-none focus:border-[#1E3A5F]"
                         />
                     </div>
                     <div className="md:col-span-2">
@@ -240,14 +246,14 @@ export default function SessionIndex() {
                             type="date"
                             value={dateFilter}
                             onChange={(e) => { setPage(1); setDateFilter(e.target.value); }}
-                            className="w-full h-9 px-2 text-xs bg-white border border-[#E5E7EB] rounded focus:outline-none focus:border-[#1E3A5F]"
+                            className="w-full h-9 px-2 text-xs bg-white border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#1E3A5F]"
                         />
                     </div>
                     <div className="md:col-span-2">
                         <select
                             value={kelasFilter}
                             onChange={(e) => { setPage(1); setKelasFilter(e.target.value); }}
-                            className="w-full h-9 px-2 text-xs bg-white border border-[#E5E7EB] rounded focus:outline-none focus:border-[#1E3A5F]"
+                            className="w-full h-9 px-2 text-xs bg-white border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#1E3A5F]"
                         >
                             <option value="">Semua Kelas</option>
                             {kelasOptions.map((k) => <option key={k} value={k}>{k}</option>)}
@@ -257,7 +263,7 @@ export default function SessionIndex() {
                         <select
                             value={mapelFilter}
                             onChange={(e) => { setPage(1); setMapelFilter(e.target.value); }}
-                            className="w-full h-9 px-2 text-xs bg-white border border-[#E5E7EB] rounded focus:outline-none focus:border-[#1E3A5F]"
+                            className="w-full h-9 px-2 text-xs bg-white border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#1E3A5F]"
                         >
                             <option value="">Semua Mapel</option>
                             {mapelOptions.map((m) => <option key={m} value={m}>{m}</option>)}
@@ -266,7 +272,7 @@ export default function SessionIndex() {
                     <div className="md:col-span-1">
                         <button
                             onClick={handleResetFilter}
-                            className="w-full h-9 flex items-center justify-center gap-1 border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#6B7280] rounded text-[11px] font-medium"
+                            className="w-full h-9 flex items-center justify-center gap-1 border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#6B7280] rounded-lg text-[11px] font-medium"
                         >
                             <RefreshCw size={13} />
                             <span>Reset</span>
@@ -276,7 +282,7 @@ export default function SessionIndex() {
             </div>
 
             {/* TABLE */}
-            <div className="bg-white border border-[#E5E7EB] rounded-lg overflow-hidden">
+            <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden">
                 <div className="px-4 py-3 border-b border-[#E5E7EB] flex items-center justify-between">
                     <span className="text-sm font-semibold text-[#1F2937]">Daftar Sesi Absensi</span>
                     <div className="flex items-center gap-2 text-[11px] text-[#6B7280]">
@@ -284,7 +290,7 @@ export default function SessionIndex() {
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
-                            className="border border-[#E5E7EB] rounded text-[11px] py-1 px-2 focus:outline-none focus:border-[#1E3A5F]"
+                            className="border border-[#E5E7EB] rounded-lg text-[11px] py-1 px-2 focus:outline-none focus:border-[#1E3A5F]"
                         >
                             <option value="terbaru">Waktu Terbaru</option>
                             <option value="terlama">Waktu Terlama</option>
@@ -382,7 +388,7 @@ export default function SessionIndex() {
                                                     )}
                                                 </td>
                                                 <td className="py-2.5 px-3 text-center">
-                                                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
                                                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                                                         Aktif
                                                     </span>
@@ -391,20 +397,20 @@ export default function SessionIndex() {
                                                     <div className="inline-flex items-center gap-1.5">
                                                         <button
                                                             onClick={() => navigate(`/teacher/sessions/${s.id}`)}
-                                                            className="px-2 py-1 bg-[#1E3A5F] text-white hover:bg-[#16304F] rounded text-[11px] font-medium"
+                                                            className="px-2 py-1 bg-[#1E3A5F] text-white hover:bg-[#16304F] rounded-full text-[11px] font-medium"
                                                         >
                                                             Monitoring
                                                         </button>
                                                         <button
                                                             onClick={() => setQrModalSessionId(s.id)}
                                                             title="Tampilkan QR"
-                                                            className="px-2 py-1 bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] rounded text-[11px]"
+                                                            className="px-2 py-1 bg-white border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#1F2937] rounded-full text-[11px]"
                                                         >
                                                             <Monitor size={13} className="inline" />
                                                         </button>
                                                         <button
                                                             onClick={() => setCloseConfirm({ open: true, id: s.id })}
-                                                            className="px-2 py-1 bg-red-50 border border-red-200 hover:bg-red-100 text-red-600 rounded text-[11px] font-medium"
+                                                            className="px-2 py-1 bg-red-50 border border-red-200 hover:bg-red-100 text-red-600 rounded-full text-[11px] font-medium"
                                                         >
                                                             Tutup
                                                         </button>
@@ -469,27 +475,27 @@ export default function SessionIndex() {
                                 <div className="w-9 h-9 rounded-lg bg-red-50 text-red-600 border border-red-200 flex items-center justify-center">
                                     <AlertTriangle size={18} />
                                 </div>
-                                <h3 className="text-sm font-semibold text-gray-900">Tutup Sesi Absensi?</h3>
+                                <h3 className="text-sm font-semibold text-[#1F2937]">Tutup Sesi Absensi?</h3>
                             </div>
                             <button
                                 onClick={() => setCloseConfirm({ open: false, id: null })}
-                                className="text-gray-400 hover:text-gray-600 transition-colors"
+                                className="text-[#9CA3AF] hover:text-[#4B5563] transition-colors"
                             >
                                 <X size={18} />
                             </button>
                         </div>
 
-                        <p className="text-sm text-gray-600 mb-1">
+                        <p className="text-sm text-[#4B5563] mb-1">
                             Sesi ini akan ditutup dan siswa tidak akan bisa scan QR lagi.
                         </p>
-                        <p className="text-sm text-gray-500 mb-5">
+                        <p className="text-sm text-[#6B7280] mb-5">
                             Pastikan semua kehadiran sudah tercatat sebelum menutup sesi.
                         </p>
 
-                        <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-100">
+                        <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#E5E7EB]">
                             <button
                                 onClick={() => setCloseConfirm({ open: false, id: null })}
-                                className="h-9 px-4 rounded-lg border border-[#E5E7EB] hover:bg-[#F5F7FA] text-gray-700 text-sm font-medium transition-colors"
+                                className="h-9 px-4 rounded-lg border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#374151] text-sm font-medium transition-colors"
                             >
                                 Batal
                             </button>
@@ -539,7 +545,7 @@ function CreateSessionModal({ onClose, onCreated }) {
 
     return (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={onClose}>
-            <div className="bg-white w-full max-w-md rounded-lg border border-[#E5E7EB] shadow-xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white w-full max-w-md rounded-xl border border-[#E5E7EB] shadow-xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
                 <div className="px-4 py-3 bg-[#1E3A5F] text-white flex items-center justify-between">
                     <h3 className="text-sm font-bold flex items-center gap-2"><Plus size={18} /> Buat Sesi Absensi Baru</h3>
                     <button onClick={onClose} className="text-white/80 hover:text-white"><X size={18} /></button>
@@ -547,7 +553,7 @@ function CreateSessionModal({ onClose, onCreated }) {
                 <form onSubmit={handleSubmit} className="p-5 space-y-4">
                     <div>
                         <label className="block text-[11px] font-bold text-[#6B7280] uppercase mb-1">Mata Pelajaran</label>
-                        <select value={form.subject_id} onChange={(e) => setForm({ ...form, subject_id: e.target.value })} className="w-full h-9 rounded border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]">
+                        <select value={form.subject_id} onChange={(e) => setForm({ ...form, subject_id: e.target.value })} className="w-full h-9 rounded-lg border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]">
                             <option value="">Pilih mata pelajaran</option>
                             {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
                         </select>
@@ -555,7 +561,7 @@ function CreateSessionModal({ onClose, onCreated }) {
                     </div>
                     <div>
                         <label className="block text-[11px] font-bold text-[#6B7280] uppercase mb-1">Kelas</label>
-                        <select value={form.class_id} onChange={(e) => setForm({ ...form, class_id: e.target.value })} className="w-full h-9 rounded border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]">
+                        <select value={form.class_id} onChange={(e) => setForm({ ...form, class_id: e.target.value })} className="w-full h-9 rounded-lg border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]">
                             <option value="">Pilih kelas</option>
                             {classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
@@ -564,12 +570,12 @@ function CreateSessionModal({ onClose, onCreated }) {
                     <div className="grid grid-cols-2 gap-3">
                         <div>
                             <label className="block text-[11px] font-bold text-[#6B7280] uppercase mb-1">Waktu Mulai</label>
-                            <input type="time" value={form.start_time} onChange={(e) => setForm({ ...form, start_time: e.target.value })} className="w-full h-9 rounded border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]" />
+                            <input type="time" value={form.start_time} onChange={(e) => setForm({ ...form, start_time: e.target.value })} className="w-full h-9 rounded-lg border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]" />
                             {errors.start_time && <p className="text-[11px] text-red-600 mt-1">{errors.start_time[0]}</p>}
                         </div>
                         <div>
                             <label className="block text-[11px] font-bold text-[#6B7280] uppercase mb-1">Waktu Selesai</label>
-                            <input type="time" value={form.end_time} onChange={(e) => setForm({ ...form, end_time: e.target.value })} className="w-full h-9 rounded border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]" />
+                            <input type="time" value={form.end_time} onChange={(e) => setForm({ ...form, end_time: e.target.value })} className="w-full h-9 rounded-lg border border-[#E5E7EB] px-3 text-sm focus:outline-none focus:border-[#1E3A5F]" />
                             {errors.end_time && <p className="text-[11px] text-red-600 mt-1">{errors.end_time[0]}</p>}
                         </div>
                     </div>
@@ -618,14 +624,14 @@ function QrModal({ sessionId, onClose, onClosed }) {
     if (!session) {
         return (
             <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-                <div className="bg-white rounded-lg p-6 text-sm text-[#6B7280]">Memuat sesi...</div>
+                <div className="bg-white rounded-xl p-6 text-sm text-[#6B7280]">Memuat sesi...</div>
             </div>
         );
     }
 
     return (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={onClose}>
-            <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-2xl max-w-md w-full overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-2xl max-w-md w-full overflow-hidden" onClick={(e) => e.stopPropagation()}>
                 <div className="p-4 bg-[#1E3A5F] text-white flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Monitor size={20} />
@@ -666,16 +672,16 @@ function QrModal({ sessionId, onClose, onClosed }) {
                                     <div className="w-9 h-9 rounded-lg bg-red-50 text-red-600 border border-red-200 flex items-center justify-center">
                                         <AlertTriangle size={18} />
                                     </div>
-                                    <h3 className="text-sm font-semibold text-gray-900">Tutup Sesi Absensi?</h3>
+                                    <h3 className="text-sm font-semibold text-[#1F2937]">Tutup Sesi Absensi?</h3>
                                 </div>
-                                <button onClick={() => setShowConfirm(false)} className="text-gray-400 hover:text-gray-600">
+                                <button onClick={() => setShowConfirm(false)} className="text-[#9CA3AF] hover:text-[#4B5563]">
                                     <X size={18} />
                                 </button>
                             </div>
-                            <p className="text-sm text-gray-600 mb-1">Sesi <strong>{session.kelas}</strong> — <strong>{session.mata_pelajaran}</strong> akan ditutup.</p>
-                            <p className="text-sm text-gray-500 mb-5">Siswa tidak akan bisa scan QR lagi setelah sesi ditutup.</p>
-                            <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-100">
-                                <button onClick={() => setShowConfirm(false)} className="h-9 px-4 rounded-lg border border-[#E5E7EB] hover:bg-[#F5F7FA] text-gray-700 text-sm font-medium transition-colors">Batal</button>
+                            <p className="text-sm text-[#4B5563] mb-1">Sesi <strong>{session.kelas}</strong> — <strong>{session.mata_pelajaran}</strong> akan ditutup.</p>
+                            <p className="text-sm text-[#6B7280] mb-5">Siswa tidak akan bisa scan QR lagi setelah sesi ditutup.</p>
+                            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#E5E7EB]">
+                                <button onClick={() => setShowConfirm(false)} className="h-9 px-4 rounded-lg border border-[#E5E7EB] hover:bg-[#F5F7FA] text-[#374151] text-sm font-medium transition-colors">Batal</button>
                                 <button onClick={handleTutup} disabled={isClosing} className="h-9 px-4 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-50 transition-colors flex items-center gap-2">
                                     {isClosing && <Loader2 size={16} className="animate-spin" />}
                                     <span>{isClosing ? 'Menutup...' : 'Ya, Tutup'}</span>

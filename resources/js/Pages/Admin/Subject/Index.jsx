@@ -387,8 +387,8 @@ export default function SubjectIndex() {
                                                     Aktif
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 border border-gray-200">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-gray-500" />
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#F3F4F6] text-[#374151] border border-[#E5E7EB]">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#6B7280]" />
                                                     {subject.status}
                                                 </span>
                                             )}
@@ -550,7 +550,7 @@ export default function SubjectIndex() {
                                         Aktif
                                     </span>
                                 ) : (
-                                    <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200 text-[11px] font-semibold">
+                                    <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-[#F3F4F6] text-[#374151] border border-[#E5E7EB] text-[11px] font-semibold">
                                         {detailTarget.status}
                                     </span>
                                 )}
